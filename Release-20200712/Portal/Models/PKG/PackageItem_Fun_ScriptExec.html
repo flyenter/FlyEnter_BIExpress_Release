@@ -1,0 +1,510 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+    <script src="../../Scripts/my/shareConstDefinition.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="PackageItemForm">
+            <div class="layui-tab layui-tab-brief" lay-filter="TaskItemTabs" style="margin-top: 0px; height: 400px;">
+                <ul class="layui-tab-title">
+                    <li lay-id="basic" class="layui-this"><span data-i18n-text="tab-basic">Basic</span></li>
+                    <li lay-id="preCondition"><span data-i18n-text="tab-pre-condition">PreCondition</span></li>
+                    <li lay-id="dataQuery"><span data-i18n-text="tab-data-query">Data Query</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="TaskID" data-i18n-text="fld-TaskID">Task ID</label>
+                                <div class="layui-input-inline" style="width:300px;">
+                                    <input class="layui-input" id="TaskID" name="TaskID" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <input type="checkbox" name="IsEnabled" id="IsEnabled" data-i18n-title="lbl-IsEnabled" value="1" lay-skin="primary" title="Available" checked="">
+                                <input type="checkbox" name="IsAuditNeed" id="IsAuditNeed" data-i18n-title="lbl-IsAuditNeed" value="1" lay-skin="primary" title="Audit">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" data-i18n-text="fld-TaskGroupIDs">Task Group</label>
+                                <div class="layui-input-inline" style="text-align:left;width:534px;">
+                                    <div class="layui-input-block" id="TaskGroupIDs" lay-filter="TaskGroupIDs">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="TaskNo" data-i18n-text="fld-TaskNo">Task No</label>
+                                <div class="layui-input-inline" style="width:120px;">
+                                    <input class="layui-input" id="TaskNo" name="TaskNo" lay-verify="required" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="TaskName" data-i18n-text="fld-TaskName">Task Name</label>
+                                <div class="layui-input-inline" style="width:280px;">
+                                    <input class="layui-input" id="TaskName" name="TaskName" lay-verify="required" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="SequenceValue" data-i18n-text="fld-SequenceValue">Order</label>
+                                <div class="layui-input-inline" style="width:60px;">
+                                    <input class="layui-input" id="SequenceValue" name="SequenceValue" autocomplete="off" lay-verify="int" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" id="srcDatabaseItem">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="SrcDatabaseName" data-i18n-text="fld-SrcDatabaseName">Data Source</label>
+                                <div class="grpBtnContainer">
+                                    <div class="layui-input-inline grpBtnTxtitem" style="width:618px;margin-left:1px;">
+                                        <input class="layui-input" id="SrcDatabaseName" name="SrcDatabaseName" lay-verify="required" autocomplete="off" readonly="readonly">
+                                    </div>
+                                    <div class="grpBtnIconItem">
+                                        <a id="grpSrcDataClean" class="layui-btn layui-btn-primary"><i class="fa fa-eraser"></i></a>
+                                        <a id="grpDataBase" class="layui-btn layui-btn-primary" style="margin-left:-3px;"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item" id="tagDataTableItem">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DstDataTableName" data-i18n-text="fld-DstDataTableName">Target Table</label>
+                                <div class="grpBtnContainer">
+                                    <div class="layui-input-inline grpBtnTxtitem" style="width:618px;margin-left:1px;">
+                                        <input class="layui-input" id="DstDataTableName" name="DstDataTableName" autocomplete="off" readonly="readonly">
+                                    </div>
+                                    <div class="grpBtnIconItem">
+                                        <a id="grpDstDataClean" class="layui-btn layui-btn-primary"><i class="fa fa-eraser"></i></a>
+                                        <a id="grpDataTable" class="layui-btn layui-btn-primary" style="margin-left:-3px;"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" for="BizDesc" data-i18n-text="fld-BizDesc">Desc</label>
+                            <div style="margin-left:130px;margin-right:60px;">
+                                <textarea id="BizDesc" name="BizDesc" class="layui-textarea" style="height:150px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="LogicType" data-i18n-text="fld-LogicType">Default Logic</label>
+                                <div class="layui-input-inline">
+                                    <select id="LogicType" name="LogicType" lay-filter="LogicType" lay-verify="required"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="FailureDirectionType" style="width:200px;" data-i18n-text="fld-FailureDirectionType">Direction when not satisfied</label>
+                                <div class="layui-input-inline">
+                                    <select id="FailureDirectionType" name="FailureDirectionType" lay-filter="FailureDirectionType" lay-verify="required"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-btn-group layui-inline">
+                                <a id="btn-add-condition-item" class="layui-btn layui-btn-primary"><i class="fa fa-cube"></i> <span data-i18n-text="btn-AddConditionItem">Add Condition Item</span></a>
+                                <a id="btn-add-condition-group" class="layui-btn layui-btn-primary"><i class="fa fa-cubes"></i> <span data-i18n-text="btn-AddConditionGroup">Add Condition Group</span></a>
+                            </div>
+                        </div>
+                        <table id="tblPreConditionItems" class="layui-tab layui-form layui-hide" lay-filter="tblPreConditionItems"></table>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div style="margin-left:2px;margin-right:5px;">
+                                <blockquote class="layui-elem-quote" id="lblDataQueryDesc">
+                                    <span data-i18n-html="lbl-data-query-desc">These script will be executed on <font color="red">Source</font> Database</span>
+                                </blockquote>
+                                <textarea id="ScriptOnSrc" name="ScriptOnSrc" class="layui-textarea" style="height:370px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="PackageID" name="PackageID" style="display:none;" />
+                    <input id="SrcDatabaseID" name="SrcDatabaseID" style="display:none;" />
+                    <input id="SrcDataTableID" name="SrcDataTableID" style="display:none;" />
+                    <input id="DstDatabaseID" name="DstDatabaseID" style="display:none;" />
+                    <input id="DstDataTableID" name="DstDataTableID" style="display:none;" />
+                    <input id="OwnerID" name="OwnerID" style="display:none;" />
+                    <input id="TaskCategory" name="TaskCategory" style="display:none;" />
+                    <input id="ServiceCategory" name="ServiceCategory" style="display:none;" />
+                    <input id="PreConditionID" name="PreConditionID" style="display:none;" />
+                    <input id="FileInfoID" name="FileInfoID" style="display:none;" />
+                    <input id="GeneratorID" name="GeneratorID" style="display:none;" />
+                    <input id="EMailID" name="EMailID" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var indexD = parent.layer.getFrameIndex(window.name);
+        var _preCallFun = null;
+        var defPreConditionParentID = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+        var _subIndex = -1;
+        var form;
+
+        function LoadTaskInfo(tskCategory, pkgID, taskID, callFun) {
+            _preCallFun = callFun;
+
+            layui.config({
+                base: '../../Scripts/layuiadmin/lib/Extend/'
+            }).extend({
+                selectM: 'selectM',
+                treetable: 'treetable-lay/treetable'
+            }).use(['table', 'form', 'element', 'selectM', 'treetable'], function () {
+                var tbl = layui.table;
+                form = layui.form;
+                var element = layui.element;
+                var $ = layui.$;
+                var selectM = layui.selectM;
+                var treetable = layui.treetable;
+
+                $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+                $('#TaskCategory').val(tskCategory);
+                $('#PackageID').val(pkgID);
+                $('#TaskID').val(taskID);
+
+                var _selectM = My_Init_Package_TaskGroup($, selectM, pkgID, 'TaskGroupIDs', '');
+                My_Init_LogicType($, form, 'LogicType', false);
+                My_Init_FailureDirectionType($, form, 'FailureDirectionType', false);
+
+                if (taskID != '') {
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Get_Package_TaskItem',
+                        type: 'POST',
+                        async: false,
+                        data: {
+                            TaskID: taskID
+                        },
+                        success: function (data) {
+                            if (data != null && data != '') {
+                                var _data = JSON.parse(data);
+                                form.val('PackageItemForm', _data.data);
+                                if (_data.data.SrcDatabaseID != null && _data.data.SrcDatabaseID != '') {
+                                    var dbname = '[' + _data.data.SrcDSName + '].[' + _data.data.SrcDatabaseName + ']';
+                                    if (_data.data.SrcDataTableName != null && _data.data.SrcDataTableName != '')
+                                        dbname += '.[' + (_data.data.SrcDataTableSchema || '') + '].[' + _data.data.SrcDataTableName + ']';
+                                    $('#SrcDatabaseName').val(dbname);
+                                }
+                                if (_data.data.DstDataTableID != null && _data.data.DstDataTableID != '') {
+                                    if (_data.data.TaskCategory.indexOf('Dispatch') > -1) {
+                                        var tblName = '[' + _data.data.DstDSName + '].[' + _data.data.DstDatabaseName + '].[' + _data.data.DstDataTableSchema + '].[' + _data.data.DstDataTableName + ']';
+                                        $('#DstDataTableName').val(tblName);
+                                    }
+                                    else {
+                                        var tblName = '[' + _data.data.DstDataTableSchema + '].[' + _data.data.DstDataTableName + ']';
+                                        $('#DstDataTableName').val(tblName);
+                                    }
+                                } else if (_data.data.DstDatabaseID != null && _data.data.DstDatabaseID != '') {
+                                    var tblName = '[' + _data.data.DstDSName + '].[' + _data.data.DstDatabaseName + ']';
+                                    $('#DstDataTableName').val(tblName);
+                                }
+                                var _defV = [];
+                                if (_data.data.TaskGroupIDs != null && _data.data.TaskGroupIDs != '') {
+                                    _defV = _data.data.TaskGroupIDs.split(',');
+                                    _selectM.set(_defV);
+                                }
+                                RenderPreCondtionInfo();
+                            }
+                        },
+                        error: function (err) {
+                            layer.alert(err);
+                        }
+                    });
+                }
+
+                //Must followed by the Task data loading - some component maybe removed by different task category
+                ChangeTabContentStyle(tskCategory);
+                refreshLanguage();
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }, { id: 'IsAuditNeed' }], data.field);
+                    var _data = JSON.stringify(data.field);
+
+                    var _preCondinfo = {};
+                    _preCondinfo.PreConditionID = data.field.PreConditionID;
+                    _preCondinfo.LogicType = data.field.LogicType;
+                    _preCondinfo.FailureDirectionType = data.field.FailureDirectionType;
+                    var _preCondiStr = JSON.stringify(_preCondinfo);
+
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Set_Package_Task_Update',
+                        type: 'POST',
+                        data: { TaskItem: _data, PreCondition: _preCondiStr },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                _preCallFun(JSON.stringify(item));
+                                parent.layer.close(indexD);
+                            }
+                            else {
+                                layer.alert($.i18n.prop('msg-err-invalid-service-call'));
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+                $('#btnClose').click(function () {
+                    parent.layer.close(indexD);
+                });
+
+                $('#btn-add-condition-item').click(function () {
+                    var _taskID = $('#TaskID').val();
+                    if (_taskID == null || _taskID == '')
+                        layer.msg($.i18n.prop('msg-create-main-first'));
+                    else
+                        EditPreConditionItem('', defPreConditionParentID, 'item');
+                });
+                $('#btn-add-condition-group').click(function () {
+                    var _taskID = $('#TaskID').val();
+                    if (_taskID == null || _taskID == '')
+                        layer.msg($.i18n.prop('msg-create-main-first'));
+                    else
+                        EditPreConditionItem('', defPreConditionParentID, 'group');
+                });
+                tbl.on('tool(tblPreConditionItems)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event == 'del-item') {
+                        var url_LogicRemove = '../../Data/svcPackageProvider.aspx?method=Set_Package_Task_ConditionItem_LogicDelete';
+                        var _IDs = [];
+                        _IDs.push({ 'ConditionItemID': data.ConditionItemID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                        Shared_Record_Remove($, _IDs, url_LogicRemove, RefreshPreCondtionResult);
+                    } else if (obj.event == 'add-sub-item') {
+                        EditPreConditionItem('', data.ConditionItemID, 'item');
+                    }
+                });
+                tbl.on('rowDouble(tblPreConditionItems)', function (obj) {
+                    var data = obj.data;
+                    EditPreConditionItem(data.ConditionItemID, '', '');
+                });
+                tbl.on('row(tblPreConditionItems)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+                function RenderPreCondtionInfo() {
+                    var _taskID = $('#TaskID').val();
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Get_Package_Task_PreConditionInfo',
+                        type: 'POST',
+                        async: false,
+                        data: { TaskID: _taskID },
+                        success: function (data) {
+                            if (data != null && data != '') {
+                                var _data = JSON.parse(data);
+                                $('#PreConditionID').val(_data.PreConditionID);
+                                $('#LogicType').val(_data.LogicType);
+                                $('#FailureDirectionType').val(_data.FailureDirectionType);
+                                form.render('select');
+                            }
+                        }
+                    });
+
+                    ReloadPreConditionItemsList();
+                }
+                function RefreshPreCondtionResult() {
+                    var _taskID = $('#TaskID').val();
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Update_Package_Task_HasPreConditionFlag',
+                        type: 'POST',
+                        async: false,
+                        data: { TaskID: _taskID }
+                    });
+                    ReloadPreConditionItemsList();
+                }
+                function ReloadPreConditionItemsList() {
+                    _subIndex = -1;
+                    var _taskID = $('#TaskID').val();
+                    treetable.render({
+                        elem: '#tblPreConditionItems',
+                        id: 'PreConditionItemGrid',
+                        url: '../../Data/svcPackageProvider.aspx?method=Get_Package_Task_PreConditionList',
+                        page: false,
+                        treeIdName: 'ConditionItemID',
+                        treePidName: 'ParentConditionItemID',
+                        treeSpid: defPreConditionParentID,
+                        treeColIndex: 1,
+                        height: 'full-200',
+                        cellMinWidth: 40,
+                        cols: [[
+                            { type: 'numbers' },
+                            { field: 'GroupOrItemName', title: 'Name', width: 160 },
+                            { field: 'IsConditionGroup', width: 40, templet: '#myConditionItemType' },
+                            { field: 'SortIndex', title: 'Sort', width: 40 },
+                            { field: 'GroupLogicType', title: 'Logic', width: 50 },
+                            { field: 'SrcParamName', title: 'Param Name', width: 200 },
+                            { field: 'ValueCompreType', title: 'Compare', width: 100 },
+                            { field: 'TargetValue', title: 'Target Value' },
+                            { field: 'IsEnabled', title: 'Rdy', width: 40, templet: '#myIsEnabled' },
+                            { field: 'operation', fixed: 'right', title: 'Operate', toolbar: '#myConditionItemEdit', width: 130 }
+                        ]],
+                        where: {
+                            TaskID: _taskID
+                        },
+                        done: function (res, curr, count) {
+                            refreshLanguage();
+                            $('tbody [data-field="GroupOrItemName"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="SrcParamName"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="TargetValue"] .layui-table-cell').css('text-align', 'left');
+                        },
+                    });
+                }
+                function EditPreConditionItem(conditionItemID, parenConditionItemID, conditionItemType) {
+                    var _pkgID = $('#PackageID').val();
+                    var _taskID = $('#TaskID').val();
+                    parent.layer.open({
+                        type: 2,
+                        area: ['700px', '460px'],
+                        title: $.i18n.prop('title-pre-condition-item'),
+                        fixed: false,
+                        maxmin: true,
+                        content: 'PackageItem_Fun_ConditionItem.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iCurFrame = parent.window['layui-layer-iframe' + index];
+                           iCurFrame.LoadConditionItem(conditionItemID, parenConditionItemID, conditionItemType, '', _pkgID,_taskID,'PreCondition', ReloadPreConditionItemsList);
+                        }
+                    });
+                }
+
+                function ChangeTabContentStyle() {
+                    var _tskCategory = $('#TaskCategory').val();
+                    $('#ServiceCategory').val(My_CONST_ServiceCategory.DataFlowService);
+                    switch (_tskCategory) {
+                        case MyCONST.Task_ExecSQLScript:
+                            $('#SrcDatabaseName').removeAttr('lay-verify');
+                            $('#srcDatabaseItem').remove();
+
+                            $('#tagDataTableItem label').data("i18n-text", 'lbl-target-database');
+                            $('#lblDataQueryDesc span').data("i18n-html", 'lbl-data-query-exec-desc');
+                            break;
+                        case MyCONST.Task_ReviseParameter:
+                            $('#tagDataTableItem').remove();
+                            $('#SrcDatabaseName').removeAttr('lay-verify');
+                            $('#lblDataQueryDesc span').data("i18n-html", 'lbl-data-query-revise-parm');
+                            break;
+                    }
+                }
+
+                $('#grpDataBase').click(function () {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('title-search-source-database'),
+                        content: '../share/shareDatabaseSearch.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            var srcDBList = GetTaskGroupDataSourceCategory();
+                            iframeWin.SetPreValue(srcDBList, '', function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        var dbname = '[' + returnData.data[0].DSName + '].[' + returnData.data[0].DatabaseName + ']';
+                                        $('#SrcDatabaseName').val(dbname);
+                                        $('#SrcDatabaseID').val(returnData.data[0].DatabaseID);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+                $('#grpSrcDataClean').click(function () {
+                    $('#SrcDatabaseName').val('');
+                    $('#SrcDatabaseID').val('');
+                    $('#SrcDataTableID').val('');
+                });
+                $('#grpDataTable').click(function () {
+                    var _packageID = $('#PackageID').val();
+                    var _tableID = $('#DstDataTableID').val();
+                    if (_tableID != null && _tableID != '') {
+                        layer.confirm($.i18n.prop('lbl-change-target-table'), {
+                            btn: [$.i18n.prop('btn-confirm'), $.i18n.prop('btn-cancel')]
+                        }, function (index) {
+                            layer.close(index);
+                            ChooseDstTable(_packageID);
+                        });
+                    } else {
+                        ChooseDstTable(_packageID);
+                    }
+                });
+                $('#grpDstDataClean').click(function () {
+                    $('#DstDataTableName').val('');
+                    $('#DstDataTableID').val('');
+                    $('#DstDatabaseID').val('');
+
+                    RenderDBMappingTable('');
+                });
+                function ChooseDstTable(_packageID) {
+                    var _taskCategory = $('#TaskCategory').val();
+                    var _title = '';
+                    var _contentURL = '';
+
+                    if (_taskCategory.indexOf('Exec') > -1) {
+                        //choose the external database
+                        _title = $.i18n.prop('title-search-dest-database');
+                        _contentURL = '../share/shareDatabaseSearch.html?v=' + My_GetTimeNumberList();
+                        parent.layer.open({
+                            type: 2,
+                            area: ['900px', '570px'],
+                            title: _title,
+                            content: _contentURL,
+                            success: function (layero, index) {
+                                _subIndex = index;
+                                var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                                var srcDBList = GetTaskGroupDataSourceCategory();
+                                iframeWin.SetPreValue(srcDBList, '', function (returnData) {
+                                    _subIndex = -1;
+                                    if (returnData != null && returnData != '') {
+                                        if (returnData.data.length > 0) {
+                                            var dbname = '[' + returnData.data[0].DSName + '].[' + returnData.data[0].DatabaseName + ']';
+                                            $('#DstDataTableName').val(dbname);
+                                            $('#DstDataTableID').val('');
+                                            $('#DstDatabaseID').val(returnData.data[0].DatabaseID);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+                function GetTaskGroupDataSourceCategory() {
+                    var _tskCategory = $('#TaskCategory').val();
+                    var _dsCategory = [];
+                    switch (_tskCategory) {
+                        case MyCONST.Task_ExecSQLScript:
+                        case MyCONST.Task_ReviseParameter:
+                            _dsCategory = ['MSSQLServer', 'MySQL', 'Oracle', 'Vertica'];
+                            break;
+                    }
+                    return _dsCategory;
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
+
+
+
+

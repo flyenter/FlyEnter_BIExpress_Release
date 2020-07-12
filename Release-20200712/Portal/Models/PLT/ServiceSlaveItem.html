@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-platform" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="serviceSlaveForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ServiceCategory" data-i18n-text="fld-ServiceCategory">Service Category</label>
+                    <div class="layui-input-inline">
+                        <select id="ServiceCategory" name="ServiceCategory" lay-filter="ServiceCategory"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="TaskCategory" data-i18n-text="fld-TaskCategory">Task Category</label>
+                    <div class="layui-input-inline" style="width:280px;">
+                        <select id="TaskCategory" name="TaskCategory" lay-filter="TaskCategory"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="HostName" data-i18n-text="fld-HostName">Host Name</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="HostName" name="HostName" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Available" checked="" data-i18n-title="lbl-IsEnabled">
+                    <input type="checkbox" name="IsFailed" id="IsFailed" value="1" lay-skin="primary" title="IsFailed" data-i18n-title="lbl-IsFailed">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ServiceURL" data-i18n-text="fld-ServiceURL">Service URL</label>
+                    <div class="layui-input-inline" style="width:600px;">
+                        <input class="layui-input" id="ServiceURL" name="ServiceURL" lay-verify="required" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="InvokeMethod" data-i18n-text="fld-InvokeMethod">Invoke Method</label>
+                    <div class="layui-input-inline">
+                        <select id="InvokeMethod" name="InvokeMethod" lay-filter="InvokeMethod"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="ParamDataExample" data-i18n-text="fld-ParamDataExample">Data Example</label>
+                <div style="margin-left:130px;margin-right:20px;">
+                    <textarea id="ParamDataExample" name="ParamDataExample" class="layui-textarea" style="height:150px;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="ErrMsg" data-i18n-text="fld-ErrMsg">Err Msg</label>
+                <div style="margin-left:130px;margin-right:20px;">
+                    <textarea id="ErrMsg" name="ErrMsg" class="layui-textarea" style="height:50px;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="ServiceID" name="ServiceID" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        //让当前子窗体自动调整高度适应内容高度
+        var _preCallFun = null;
+        var form;
+
+        function LoadItemInfo(svcID, callFun) {
+            _preCallFun = callFun;
+
+            layui.use(['form'], function () {
+                form = layui.form;
+                var $ = layui.$;
+
+                $('#ServiceID').val(svcID);
+                //My_Init_TaskCategory($, form, 'TaskCategory', false);
+                My_Init_ServiceCategory($, form, 'ServiceCategory', false);
+                My_Init_ServiceMethodCategory($, form, 'InvokeMethod', false);
+                if (svcID != '') {
+                    $.ajax({
+                        url: '../../Data/svcPlatformProvider.aspx?method=Get_Platform_ServiceSlaveItem',
+                        type: 'POST',
+                        async: false,
+                        data: { ServiceID: svcID },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    My_Init_TaskCategory($, form, 'TaskCategory', _data.data.ServiceCategory, false);
+                                    form.val('serviceSlaveForm', _data.data);
+                                }
+                                else {
+                                    alert('Invalid Service Slave ID');
+                                }
+                            }
+                            else
+                                layer.alert("Invalid Service Call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                } else {
+                    My_Init_TaskCategory($, form, 'TaskCategory', $('#ServiceCategory').val(), false);
+                }
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }, { id: 'IsFailed' }], data.field);
+                    var _data = JSON.stringify(data.field);
+                    $.ajax({
+                        url: '../../Data/svcPlatformProvider.aspx?method=Set_Platform_ServiceSlave_Update',
+                        type: 'POST',
+                        async: false,
+                        data: { ServiceSlaveItem: _data },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                if (_preCallFun != null)
+                                    _preCallFun(item);
+                                parent.layer.close(index);
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+                form.on('select(ServiceCategory)', function (data) {
+                    var svcCategory = $('#ServiceCategory').val();
+                    My_Init_TaskCategory($, form, 'TaskCategory', svcCategory, false);
+                });
+                $('#btnClose').click(function () {
+                    parent.layer.close(index);
+                });
+            });
+        };
+
+    </script>
+</body>
+</html>
+
+
+
+

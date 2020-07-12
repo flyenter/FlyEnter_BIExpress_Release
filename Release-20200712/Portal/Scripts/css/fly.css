@@ -1,0 +1,313 @@
+﻿html, body {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    /*height: 100%;*/
+    /*background: #282E33;*/
+     background-color: #373d41 !important;
+    color:#ddd;
+    font-family: Arial, Helvetica, sans-serif,'Arial Rounded MT',FontAwesome;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.fly-calendar {
+    height: 23px;
+    width: 100px;
+    padding-right: 0px;
+    padding-left: 5px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    background-color: transparent;
+    color: #A2ACB3;
+    border: 1px solid gray;
+}
+.fly-calendar:hover, .fly-calendar:active{
+   border-color:#00ff21;
+}
+
+.fly-header-logo {
+    float: left;
+    padding-left:5px;
+}
+
+.fly-header-logo img{
+     width: 170px;
+    height: 53px;
+}
+
+.fly-header-welcome{
+    display:block;
+    float:right;
+    padding-top:30px;
+    padding-right:20px;
+}
+
+a:link,a:visited{
+    color:#DDD;
+    text-decoration:none;        
+}
+a:hover{
+    color:white;
+}
+a.fly-a:link, a.fly-a:visited {
+    color: #FFF;
+    padding: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+a.fly-a:hover{
+    color:#FFF;
+}
+a.fly-user:before {
+    font-family: 'Font Awesome 5 Brands';
+    content: "\f17e";
+    padding-right:5px;
+}
+a.fly-user:hover{
+    color:red;
+}
+.mini-buttonedit-input:focus{
+    border-color:#00ff21;
+}
+
+.fly-Button {
+    color: #FFF;
+    background-color: transparent;
+    border-color: #EEE;
+    text-decoration: none;
+    text-wrap: none;
+    text-align: center;
+    line-height: 26px;
+    height: 26px;
+    width: 120px;
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+    .fly-Button:hover {
+        background-color: rgb(224, 222, 222);
+        color:red;
+    }
+
+    .fly-Button:active {
+        background-color: rgba(255, 255, 255, 0.7);
+        color: white;
+        padding-top: 1px;
+    }
+    .fly-Button.disable {
+        pointer-events: none;
+        cursor: default;
+        border:0;
+    }
+.fly-Button-plain {
+    border: 1px solid gray;
+}
+.fly-Button-HighLight{
+    background-color:rgb(87, 179, 37) !important;
+}
+
+.fly-Button-toolbar {
+}
+
+.fly-message-area {
+    background-color: #666;
+    padding-left: 5px;
+    color: #FFF;
+    font-size: 12px;
+    float:left;
+    width:100%;
+    display:inline-block;
+}
+.fly-message-area div{
+    float:left;
+    padding-left:5px;
+    text-align:left;
+    min-width:100px;
+    white-space:nowrap;
+}
+.fly-message-area span{
+    float:left;
+    padding-right:5px;
+    min-width:80px;
+    color:#C3C3C3;
+    text-align:right;
+}
+.fly-toolbar-area {
+    background-color: transparent;
+    line-height: 29px;
+    border: 0;
+    float: left;
+    padding-left: 5px;
+    margin: 0;
+    vertical-align: middle;
+}
+    .fly-toolbar-area-bottom {
+        /*background-color: red !important;*/
+        width: 100%;
+        text-align: center;
+        position:fixed;
+        bottom:4px;
+        font-size:1.2em;
+        /*zoom:1.3;*/
+    }
+.fly-button-inner-row {
+    display: inline;
+    height: 20px;
+    line-height:20px;
+    background-color:#3A3939;
+    color:white;
+    cursor: pointer;
+    padding:3px;
+    margin-left:2px;
+    margin-right:2px;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+    .fly-button-inner-row:hover {
+         background-color:rgb(87, 179, 37) !important;
+         color:#FFF;
+    }
+    .fly-button-inner-row-onlyicon{
+        background-color:transparent;
+        font-size:1.4em;
+        text-align:center;
+        margin:0;
+    }
+.fly-button-inner-row.disable {
+    color: #a7abb0;
+    cursor:default;
+    pointer-events:none;    
+}
+.fly-button-inner-row.danger:hover{
+    background-color:#A70808 !important;
+}
+.fly-button-inner-row.highlight{
+     background-color:rgb(87, 179, 37);
+     color:white;
+}
+.fly-button-inner-row.highlight:hover{
+    color:red;
+}
+
+.fly-separator {
+    display: inline-block;
+    zoom: 1;
+    border: 0;
+    border-left: solid 1px #adb3b9;
+    margin: 1px;
+    margin-top: 0px;
+    height: 18px;
+    vertical-align: middle;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.fly-separator-vertical{
+    border-bottom:1px solid #adb3b9;
+    margin-bottom:5px;
+}
+
+.fly-clear{
+    clear:both;
+    height:2px;
+}
+
+.fly-table{
+    padding-left:3px;
+    padding-top:3px;
+}
+
+.fly-case-status{
+    width:100%;
+    padding-left:4px;
+    line-height:22px;
+    height:22px;
+}
+    .fly-case-status.process {
+         background-color: green;
+        color: white;
+    }
+    .fly-case-status.failed {
+        background-color:yellow;
+        color:black;
+    }
+    .fly-case-status.pending {
+        background-color:orange;
+        color:black;
+    }
+    .fly-case-status.completed {
+       background-color:rgb(48, 48, 84);
+        color:white;
+    }
+
+    /*fly menu session*/
+    .fly-menu {
+    border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    -webkit-border-radius: 3px 3px 0 0;
+}
+
+.fly-menu-multi-column {
+    display: none;
+    float: left;
+    position: absolute;
+    text-align: left;
+    border-top: none;
+    color: black;
+    background-color: rgb(224, 222, 222);
+    border-radius: 0 5px 5px 5px;
+    width: auto;
+    top:auto;
+    z-index: 120;
+    padding-bottom:5px;
+}
+.fly-menu:hover .fly-menu-multi-column {
+    display: block;
+}
+        .fly-menu-column{
+            list-style:none;
+            display: inline;
+            float: left;
+            position: relative;
+            margin-left: 5px;
+            margin-right: 5px;
+            width: 160px;
+        }
+        .fly-menu-column h3{
+            font-size:13px;
+            font-weight:bold;
+            color:black;
+            font-weight:normal;
+            border-bottom:2px solid #888888;
+            cursor:default;
+            pointer-events:none;
+        }
+        .fly-menu-column li{
+            font-size:12px;
+            color:black;
+            list-style:none;
+            line-height:26px;
+            padding-left:5px;
+            cursor:pointer;
+            text-wrap:none;
+        }
+            .fly-menu-column li:hover {
+                background-color:green;
+                color:white;
+            }
+            .fly-menu-column li:hover a{
+                color:white;
+            }
+

@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="databaseForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:140px;">
+                    <select id="CronFrequency" lay-filter="CronFrequency"></select>
+                </div>
+                <div class="layui-inline" style="width:100px;">
+                    <input class="layui-input" id="keyword" name="keyword" autocomplete="off" placeholder="Key words">
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-search"></i> <span data-i18n-text="btn-search">Search</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClean"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                </div>
+            </div>
+            <table id="tblScheduler" class="layui-hide" lay-filter="tblScheduler"></table>
+        </div>
+    </div>
+
+    <script type="text/html" id="myIsEnabled">
+        {{#  if(d.IsEnabled === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myIsActivated">
+        {{#  if(d.IsActivated === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myRowEdit">
+        <div class="layui-btn-group layui-inline">
+            <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="specialCase"> <span data-i18n-text="btn-specialCase">{{ $.i18n.prop('btn-specialCase') }}</span></a>
+            {{# if(d.IsActivated==1) { }}
+            <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="disable"> <span data-i18n-text="btn-schedule-disable">Disable</span></a>
+            {{#} else { }}
+            <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="activate"> <span data-i18n-text="btn-schedule-activate">Active</span></a>
+            {{#  } }}
+        </div>
+    </script>
+    <script>
+        function GetSpecialDataType(d, field, format) {
+            if (d != null && d != '' && d[field] != null)
+                switch (format) {
+                    case 'yyyy-MM-dd':
+                        return (new Date(d[field])).Format('yyyy-MM-dd');
+                    default:
+                        return d[field];
+                        break;
+                }
+            else
+                return '';
+        };
+    </script>
+    <script>
+        var form;
+        var _subIndex = -1;
+
+        layui.use(['table', 'form', 'element'], function () {
+            var tbl = layui.table;
+            form = layui.form;
+            var element = layui.element;
+            var $ = layui.$;
+
+            My_Init_Frequency($, form, 'CronFrequency', true);
+            getSearchResult();
+
+            /*检测行内按钮*/
+            tbl.on('tool(tblScheduler)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'activate') {
+                    var _IDs = [];
+                    _IDs.push({ 'ScheduleID': data.ScheduleID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    ActivateSchedule(_IDs, true, false);
+                } else if (obj.event == 'disable') {
+                    var _IDs = [];
+                    _IDs.push({ 'ScheduleID': data.ScheduleID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    ActivateSchedule(_IDs, false, false);
+                } else if (obj.event == 'specialCase') {
+                    var _IDs = [];
+                    _IDs.push({ 'ScheduleID': data.ScheduleID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    ActivateSchedule(_IDs, false, true);
+                }
+            });
+            tbl.on('row(tblScheduler)', function (obj) {
+                My_SetSelectedRowStyle(obj);
+            });
+
+            form.on('select(CronFrequency)', function (data) {
+                getSearchResult();
+            });
+
+            var active = {
+                onSearch: function () {
+                    getSearchResult();
+                },
+                onClean: function () {
+                    $('#keyword').val('');
+                    $('#CronFrequency').val('');
+                    form.render('select');
+                    getSearchResult();
+                },
+                onDisable: function () {
+                    var checkStatus = tbl.checkStatus('PackageGrid');
+                    var data = checkStatus.data;
+                    var _IDs = [];
+                    $.each(data, function (index, elem) {
+                        _IDs.push({ 'ScheduleID': elem.ScheduleID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                    });
+                    ActivateSchedule(_IDs, false, false);
+                },
+                onActivate: function () {
+                    var checkStatus = tbl.checkStatus('PackageGrid');
+                    var data = checkStatus.data;
+                    var _IDs = [];
+                    $.each(data, function (index, elem) {
+                        _IDs.push({ 'ScheduleID': elem.ScheduleID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                    });
+                    ActivateSchedule(_IDs, true, false);
+                }
+            };
+
+            $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            })
+
+            function getSearchResult() {
+                var _key = $('#keyword').val();
+                var _ds = $('#CronFrequency').val();
+
+                $.ajax({
+                    url: '../../Data/svcPackageProvider.aspx?method=Get_Activity_SchedulerList',
+                    type: 'GET',
+                    async: false,
+                    data: {
+                        CronFrequency: _ds,
+                        Keyword: _key
+                    },
+                    success: function (res) {
+                        if (res != null && res != '') {
+                            let _data = JSON.parse(res);
+                            tbl.render({
+                                elem: '#tblScheduler',
+                                page: true,
+                                id: 'ActivitySchedulerGrid',
+                                limit: 50,
+                                cellMinWidth: 40,
+                                height: 'full-60',
+                                cols: [[
+                                    { type: "numbers", fixed: 'left' },
+                                    { field: 'PackageNo', title: 'No', width: 80 },
+                                    { field: "PackageName", title: "Package Name", width: 220 },
+                                    { field: "TaskGroupName", title: "Task Group", width: 150 },
+                                    { field: 'ScheduleName', title: 'Schedule Name', width: 150 },
+                                    { field: 'CronFrequency', title: 'Frequency', width: 80 },
+                                    { field: "IsActivated", title: "Act", templet: '#myIsActivated', width: 40 },
+                                    { field: 'CronStartDate', title: 'Start Day', width: 100, templet: function (d) { return GetSpecialDataType(d, 'CronStartDate', 'yyyy-MM-dd'); } },
+                                    { field: 'CronEndDate', title: 'End Day', width: 100, templet: function (d) { return GetSpecialDataType(d, 'CronEndDate', 'yyyy-MM-dd'); } },
+                                    { field: "SchedulerOwnerName", title: "Owner" },
+                                    { field: "operation", fixed: 'right', title: 'Ops', toolbar: '#myRowEdit', width: 150 }
+                                ]],
+                                data: _data.data,
+                                done: function () {
+                                    refreshLanguage();
+
+                                    $('tbody [data-field="PackageNo"] .layui-table-cell').css('text-align', 'left');
+                                    $('tbody [data-field="PackageName"] .layui-table-cell').css('text-align', 'left');
+                                    $('tbody [data-field="TaskGroupName"] .layui-table-cell').css('text-align', 'left');
+                                    $('tbody [data-field="ScheduleName"] .layui-table-cell').css('text-align', 'left');
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            function ActivateSchedule(schIDs, isActivate, specialCase) {
+                var schIDsStr = JSON.stringify(schIDs);
+                $.ajax({
+                    url: '../../Data/svcSchedulerProvider.aspx?method=Activity_Activate_Scheduler',
+                    type: 'POST',
+                    async: false,
+                    data: {
+                        ScheduleIDs: schIDsStr,
+                        IsActivate: isActivate,
+                        RunIt: specialCase
+                    },
+                    success: function (data) {
+                        if (data != null && data != '') {
+                            var _data = JSON.parse(data);
+                            if (_data.errMsg != '')
+                                layer.alert(_data.errMsg);
+                            else {
+                                layer.msg('We have activated ' + _data.data.length + ' schedules');
+                            }
+                            getSearchResult();
+                        }
+                        else {
+                            layer.alert("Invalid Service Call");
+                        }
+                    },
+                    error: function (err) {
+                        layer.alert(err);
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
+

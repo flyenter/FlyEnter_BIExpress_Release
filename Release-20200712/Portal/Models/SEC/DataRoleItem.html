@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-security" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="DataRoleItemForm">
+            <div class="layui-tab layui-tab-brief" lay-filter="dataTableItemTabs" style="margin-top:0px;">
+                <ul class="layui-tab-title">
+                    <li class="layui-this"><span data-i18n-text='tab-datarole'>Role Info</span></li>
+                    <li><span data-i18n-text='tab-dataorleaccount'>Account List</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="RoleTitle" data-i18n-text="fld-RoleTitle">Role Title</label>
+                                <div class="layui-input-inline" style="width:300px;">
+                                    <input class="layui-input" id="RoleTitle" name="RoleTitle" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Is Enabled" data-i18n-title="lbl-IsEnabled">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="RoleDesc" data-i18n-text="fld-RoleDesc">Description</label>
+                                <div class="layui-input-inline" style="width:600px;">
+                                    <textarea id="RoleDesc" name="RoleDesc" class="layui-textarea" style="height:100px;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div class="layui-btn-group  layui-inline">
+                                <a id="btnAddDatabaseAccount" class="layui-btn layui-btn-primary"><i class="fa fa-plus"></i> <span data-i18n-text='btn-roledatabaseaccount-add'>Add Database</span></a>
+                            </div>
+                        </div>
+                        <div>
+                            <table id="tblRoleDatabaseList" class="layui-hide" lay-filter="tblRoleDatabaseList"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="DataRoleID" name="DataRoleID" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _preCallFun = null;
+        var _subIndex = -1;
+        var form;
+
+        function LoadDataRoleInfo(dataRoleID, callFun) {
+            _preCallFun = callFun;
+
+            layui.use(['form', 'element', 'table'], function () {
+                form = layui.form;
+                var $ = layui.$;
+                var tbl = layui.table;
+                var element = layui.element;
+
+                $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+                $('#DataRoleID').val(dataRoleID);
+
+                if (dataRoleID != '') {
+                    $.ajax({
+                        url: '../../Data/svcSecurityProvider.aspx?method=Get_DataRole_Item',
+                        type: 'POST',
+                        async: false,
+                        data: {
+                            DataRoleID: dataRoleID
+                        },
+                        success: function (data) {
+                            if (data != null && data != '') {
+                                var _data = JSON.parse(data);
+                                form.val('DataRoleItemForm', _data.data);
+                                refreshLanguage();
+
+                                RenderDataRoleDatabaseList();
+                            }
+                        },
+                        error: function (err) {
+                            layer.alert(err);
+                        }
+                    });
+                }
+                else {
+                    RenderDataRoleDatabaseList();
+                }
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }], data.field);
+                    var _data = JSON.stringify(data.field);
+                    $.ajax({
+                        url: '../../Data/svcSecurityProvider.aspx?method=Set_DataRole_Update',
+                        type: 'POST',
+                        data: { DataRoleItem: _data },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _item = JSON.parse(item);
+                                _preCallFun(JSON.stringify(_item));
+                                parent.layer.close(index);
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+                tbl.on('tool(tblRoleDatabaseList)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event == 'deleteAttachment') {
+                        var _IDs = [];
+                        _IDs.push({ 'DataRoleItemID': data.DataRoleItemID });
+                        RemoveDatabaseItem(_IDs);
+                    }
+                });
+                tbl.on('row(tblRoleDatabaseList)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+                $('#btnAddDatabaseAccount').click(function () {
+                    var _dataRoleID = $('#DataRoleID').val();
+                    if (_dataRoleID != '') {
+                        parent.layer.open({
+                            type: 2,
+                            area: ['900px', '570px'],
+                            title: $.i18n.prop('title-search-source-database-account'),
+                            content: '../share/shareDatabaseAccountSearch.html?v=' + My_GetTimeNumberList(),
+                            success: function (layero, index) {
+                                _subIndex = index;
+                                var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                                iframeWin.SetPreValue('', '', function (returnData) {
+                                    _subIndex = -1;
+                                    if (returnData != null && returnData != '') {
+                                        if (returnData.data.length > 0) {
+                                            var _newDBItem = {
+                                                DataRoleID: _dataRoleID,
+                                                AccountID: returnData.data[0].AccountID,
+                                                IsEnabled: 1
+                                            };
+                                            var _newDBItemStr = JSON.stringify(_newDBItem);
+
+                                            $.ajax({
+                                                url: '../../Data/svcSecurityProvider.aspx?method=Set_DataRoleItem_Update',
+                                                type: 'POST',
+                                                data: { DataRoleDatabaseItem: _newDBItemStr },
+                                                success: function (item) {
+                                                    ReloadDatabaseAccountList();
+                                                },
+                                                error: function (error) {
+                                                    layer.alert(error.responseText);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        layer.alert($.i18n.prop('msg-create-main-first'));
+                    }
+                });
+                $('#btnClose').click(function () {
+                    parent.layer.close(index);
+                });
+
+                function RenderDataRoleDatabaseList() {
+                    var _dataRoleID = $('#DataRoleID').val();
+                    tbl.render({
+                        url: '../../Data/svcSecurityProvider.aspx?method=Get_DataRowItems_List',
+                        elem: '#tblRoleDatabaseList',
+                        page: false,
+                        limit: 500,
+                        id: 'DataRoleItemsGrid',
+                        cellMinWidth: 40,
+                        height: 'full-160',
+                        cols: [[
+                            { type: "numbers", fixed: 'left' },
+                            { field: 'DataSourceCategory', title: 'DataSourceCategory', width: 130 },
+                            { field: 'DSName', title: 'DSName' },
+                            { field: 'DatabaseName', title: 'DatabaseName' },
+                            { field: 'AccountCategory', title: 'AccountCategory' },
+                            { field: 'AccountDomain', title: 'AccountDomain' },
+                            { field: 'Account', title: 'Account' },
+                            { field: "DataAccessLevel", title: 'Access Level' },
+                            { field: 'operation', fixed: 'right', title: 'Ops', toolbar: '#myRowRemove', width: 70 },
+                        ]],
+                        done: function (res, curr, count) {
+                            refreshLanguage();
+
+                            $('tbody [data-field="DataSourceCategory"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="DSName"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="DatabaseName"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="AccountCategory"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="AccountDomain"] .layui-table-cell').css('text-align', 'left');
+                            $('tbody [data-field="Account"] .layui-table-cell').css('text-align', 'left');
+                        },
+                        where: {
+                            DataRoleID: _dataRoleID
+                        }
+                    });
+                }
+                function ReloadDatabaseAccountList() {
+                    _subIndex = -1;
+                    var _dataRoleID = $('#DataRoleID').val();
+                    tbl.reload('DataRoleItemsGrid', {
+                        where: {
+                            DataRoleID: _dataRoleID
+                        }
+                    });
+                }
+                function RemoveDatabaseItem(rows) {
+                    var urlDelete = '../../Data/svcSecurityProvider.aspx?method=Set_DataRoleItems_Delete';
+                    Shared_Record_Remove($, rows, urlDelete, ReloadDatabaseAccountList);
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
+

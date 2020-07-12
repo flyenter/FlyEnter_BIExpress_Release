@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>FlyEnter Rover BI Suit</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common" />
+    <script src="Scripts/boot.js"></script>
+    <link rel="stylesheet" href="Scripts/layuiadmin/layui/css/admin.css" media="all">
+
+    <style>
+        .layui-form-switch {
+            margin-top: 0px !important;
+            width: 80px;
+            text-align: center;
+        }
+        .layui-side-menu .layui-nav .layui-nav-item a {
+            height: 35px !important;
+            line-height: 35px !important;
+        }
+    </style>
+</head>
+<body class="layui-layout-body cn">
+    <div id="LAY_app" class="layadmin-side-shrink">
+        <div class="layui-layout layui-layout-admin">
+            <div class="layui-header layui-form">
+                <!-- 头部区域 -->
+                <ul class="layui-nav layui-layout-left">
+                    <li class="layui-nav-item layadmin-flexible" lay-unselect>
+                        <a layadmin-event="flexible" title="Left Menu">
+                            <i class="layui-icon layui-icon-spread-left" id="LAY_app_flexible"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <a href="http://www.flyenter.com" target="_blank" title="My Website">
+                            <i class="layui-icon layui-icon-website"></i>
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                        <input type="checkbox" lay-skin="switch" lay-text="中文简体|English" lay-filter="languageChoose" name="languageChoose" id="languageChoose">
+                    </li>
+                    <li class="layui-nav-item" lay-unselect style="width:50px;">
+                        <a lay-href="models/comm/announcementshowlist.html?v=20200207" layadmin-event="message" lay-text="Message Center">
+                            <i id="bell" class="fa fa-bell-o"></i>
+
+                            <!-- 如果有新消息，则显示小圆点 -->
+                            <span id="messageCenterAlert"></span>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" lay-unselect style="width:50px;">
+                        <a layadmin-event="fullscreen">
+                            <i class="layui-icon layui-icon-screen-full"></i>
+                        </a>
+                    </li>
+
+                    <li class="layui-nav-item" lay-unselect style="margin-right:10px;">
+                        <a>
+                            <div style="display:inline">
+                                <i id="userGender" class="layui-icon layui-icon-username "></i>
+                                <div id="CurrentUser" style="display:inline;"></div>
+                            </div>
+                        </a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="Default.aspx" data-i18n-text="btn-exit">Exit</a></dd>
+                        </dl>
+                    </li>
+
+                    <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
+                        <a layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 侧边菜单 -->
+            <div class="layui-side layui-side-menu">
+                <div class="layui-side-scroll">
+                    <div class="layui-logo">
+                        <span style="text-align:left;"><img src="Images/logo.png" style="width:60px;" /> BI-Express</span>
+                    </div>
+                    <div id="sysMenu">
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 页面标签 -->
+            <div class="layadmin-pagetabs" id="LAY_app_tabs">
+                <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+                <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+                <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                    <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                        <li class="layui-nav-item" lay-unselect>
+                            <a></a>
+                            <dl class="layui-nav-child layui-anim-fadein">
+                                <dd layadmin-event="closeThisTabs"><a>Close Current</a></dd>
+                                <dd layadmin-event="closeOtherTabs"><a>Close Others</a></dd>
+                                <dd layadmin-event="closeAllTabs"><a>Close All Pages</a></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <div class="layui-tab" lay-unauto lay-allowclose="true" lay-filter="layadmin-layout-tabs">
+                    <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                        <li class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 主体内容 -->
+            <div class="layui-body" id="LAY_app_body">
+                <div class="layadmin-tabsbody-item layui-show" id="consoleTab">
+                    <iframe src="Console.html" frameborder="0" class="layadmin-iframe" title="Console" id="consoleFrame"></iframe>
+                </div>
+            </div>
+
+            <!-- 辅助元素，一般用于移动设备下遮罩 -->
+            <div class="layadmin-body-shade" layadmin-event="shade"></div>
+        </div>
+    </div>
+
+    <script>
+        var form;
+
+        layui.config({
+            base: 'scripts/layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use('index');
+
+        layui.use(['form', 'layer', 'element'], function () {
+            form = layui.form;
+            var elem = layui.element;
+            var $ = layui.$;
+
+            var loading = layer.msg('loading...');
+            $.ajax({
+                url: 'Data/svcLoginProvider.aspx?method=Get_CurrentUserInfo',
+                type: 'GET',
+                success: function (data) {
+                    if (data != null && data != '') {
+                        _user = JSON.parse(data);
+                        $('#CurrentUser').html(_user.mUserName + ' ' + new Date().toLocaleDateString());
+                        $('#userGender').css('color', _user.mGender == 'Male' ? 'blue' : 'red');
+                        $.ajax({
+                            url: 'Data/svcPlatformProvider.aspx?method=Get_CurrentUserMenuList',
+                            type: 'GET',
+                            success: function (data) {
+                                if (data != null && data != '') {
+                                    $('#sysMenu').append(data);
+                                    elem.render();
+                                    form.render();
+
+                                    checkLocalLang();
+                                }
+                                layer.close(loading);
+                            },
+                            error: function (error) {
+                                layer.close(loading);
+                                layer.open({
+                                    title: 'Rover',
+                                    content: error
+                                });
+                            }
+                        });
+
+                        RefreshMsgStatus();
+                    } else {
+                        layer.close(loading);
+                        location.href = "default.aspx?v=" + My_GetTimeNumberList();
+                    }
+                },
+                error: function (error) {
+                    layer.close(loading);
+                    location.href = "default.aspx?v=" + My_GetTimeNumberList();
+                }
+            });
+
+            form.on('switch(languageChoose)', function (data) {
+
+                var lang = this.checked ? 'cn' : 'en';
+                getCookie("userLanguage", lang, {
+                    expires: 30,
+                    path: '/'
+                });
+                execI18n('scripts/i18n/', lang);
+
+                var iframeSet = document.getElementsByTagName('iframe');
+                for (var i = 0; i < iframeSet.length; i++) {
+                    if (typeof iframeSet[i].contentWindow.refreshLanguage != 'undefined') {
+                        iframeSet[i].contentWindow.refreshLanguage();
+                    }
+                }
+            });
+
+            function checkLocalLang() {
+                var iLang = 'cn';
+                iLang = GetLocalLang();
+                execI18n('scripts/i18n/', iLang);
+
+                if (iLang == 'cn')
+                    $('#languageChoose').prop('checked', true);
+                else
+                    $('#languageChoose').prop('checked', false);
+
+                form.render();
+            }
+        });
+
+        function RefreshMsgStatus() {
+            //var $ = layui.$;
+            //$.ajax({
+            //    url: '../../Data/svcBizProvider.aspx?method=Get_AnnouncementMessageCount',
+            //    type: 'GET',
+            //    success: function (data) {
+            //        if (data != null && data > 0) {
+            //            $('#bell').css('color', 'red');
+            //            $('#bell').addClass('fa-spin');
+            //            //$('#messageCenterAlert').addClass('layui-badge-dot');
+            //        } else {
+            //            $('#bell').css('color', 'black');
+            //            $('#bell').removeClass('fa-spin');
+            //            //$('#messageCenterAlert').removeClass('layui-badge-dot');
+            //        }
+            //    }
+            //});
+        }
+
+         $(document).ready(function () {
+            refreshLanguage();
+        });
+        function refreshLanguage() {
+            execI18n('scripts/i18n/', GetLocalLang());
+            if (form != null)
+                form.render('checkbox');
+        }
+    </script>
+</body>
+</html>

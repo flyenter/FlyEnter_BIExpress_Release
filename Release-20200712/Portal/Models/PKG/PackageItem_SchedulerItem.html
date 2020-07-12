@@ -1,0 +1,746 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="SchedulerForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ScheduleName" data-i18n-text="fld-ScheduleName">Scheduler</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="ScheduleName" name="ScheduleName" lay-verify="required" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" data-i18n-text="fld-TaskGroupIDs">Task Group</label>
+                    <div class="layui-input-inline" style="text-align:left;">
+                        <select id="TaskGroupID" name="TaskGroupID" lay-filter="TaskGroupID" lay-verify="required"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Available" checked="" data-i18n-title="lbl-IsEnabled">
+                    <input type="checkbox" name="IsActivated" id="IsActivated" value="1" lay-skin="primary" title="Activated" disabled data-i18n-title="fld-IsActivated">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="CronFrequency" data-i18n-text="fld-CronFrequency">Frequency</label>
+                    <div class="layui-input-inline">
+                        <select id="CronFrequency" name="CronFrequency" lay-filter="CronFrequency" lay-verify="required"></select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="margin-left:10px;">
+                    
+                    <div style="display:none;">
+                        <input type="checkbox" name="MustPublishOn" id="MustPublishOn" value="1" lay-skin="primary" title="Mandatory time point release" data-i18n-title="fld-MustPublishOn">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="CronStartDate" data-i18n-text="fld-CronStartDate">Start Day</label>
+                    <div class="layui-input-inline" style="width:120px;">
+                        <input class="layui-input" id="CronStartDate" name="CronStartDate" autocomplete="off" readonly="readonly">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="CronEndDate" data-i18n-text="fld-CronEndDate">End Day</label>
+                    <div class="layui-input-inline" style="width:120px;">
+                        <input class="layui-input" id="CronEndDate" name="CronEndDate" autocomplete="off" readonly="readonly">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="SchedulerOwnerName" data-i18n-text="fld-SchedulerOwnerName">Owner</label>
+                    <div class="grpBtnContainer">
+                        <div class="layui-input-inline grpBtnTxtitem" style="width:120px;">
+                            <input class="layui-input" id="SchedulerOwnerName" name="SchedulerOwnerName" autocomplete="off" readonly="readonly"  lay-verify="required" >
+                        </div>
+                        <div class="grpBtnIconItem">
+                            <a id="grpOwner" class="layui-btn layui-btn-primary"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="display:none;">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="PublishTimePoint" data-i18n-text="fld-PublishTimePoint">Release Time</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="PublishTimePoint" name="PublishTimePoint" autocomplete="off" readonly="readonly" placeholder="HH:mm">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div id="onetime" style="display:none;">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" for="CronOTTimePoint" data-i18n-text="fld-CronOTTimePoint">Start Time</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" id="CronOTTimePoint" name="CronOTTimePoint" autocomplete="off" lay-verify="required" readonly="readonly" placeholder="HH:mm">
+                        </div>
+                    </div>
+                </div>
+                <div id="hourly" style="margin-left: 10px; display: none;">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline" style="width:120px;">
+                            <input type="radio" name="CronMMode_ForHourly" value="minutes" title="Per Minu" data-i18n-title="lbl-per-min">
+                        </div>
+                        <label class="layui-form-label" data-i18n-text="lbl-run-each">Run each</label>
+                        <div class="layui-input-inline" style="width:40px;">
+                            <input class="layui-input" id="CronMMinutes" name="CronMMinutes" value="10" style="width:40px;" autocomplete="off">
+                        </div>
+                        <label class="layui-form-label" data-i18n-text="lbl-minutes">Minutes</label>
+                    </div>
+                    <br />
+                    <div class="layui-inline" style="margin-top:5px;">
+                        <div class="layui-input-inline" style="width: 120px;">
+                            <input type="radio" name="CronMMode_ForHourly" value="hour" title="Per Hour" checked="" data-i18n-title="lbl-per-hour">
+                        </div>
+                        <div class="layui-input-inline" style="width:500px;">
+                            <label class="layui-form-label" data-i18n-text="lbl-run-each">Run each</label>
+                            <div class="layui-input-inline" style="width:40px;">
+                                <input class="layui-input" id="CronMHour" name="CronMHour" value="1" style="width:40px;" autocomplete="off">
+                            </div>
+                            <label class="layui-form-label" data-i18n-text="lbl-hour-at">hour, at</label>
+                            <div class="layui-input-inline" style="width:40px;">
+                                <input class="layui-input" id="CronMHMinutes_forHour" name="CronMHMinutes_forHour" value="1" style="width:40px;" autocomplete="off">
+                            </div>
+                            <label class="layui-form-label" data-i18n-text="lbl-minutes">minutes</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="daily" style="display:none;">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" for="CronDTimePoint" data-i18n-text="fld-CronDTimePoint">Start Time</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" id="CronDTimePoint" name="CronDTimePoint" autocomplete="off" lay-verify="required" readonly="readonly" placeholder="HH:mm">
+                        </div>
+                    </div>
+                </div>
+                <div id="weekly" style="display:none;">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" for="CronFrequency" data-i18n-text="lbl-week-day">Week Day</label>
+                        <div class="layui-inline" style="margin-left:10px;">
+                            <input type="checkbox" name="CronMWeek" value="MON" lay-skin="primary" title="Mon" checked="" data-i18n-title="mon">
+                            <input type="checkbox" name="CronMWeek" value="TUE" lay-skin="primary" title="Tue" data-i18n-title="tue">
+                            <input type="checkbox" name="CronMWeek" value="WED" lay-skin="primary" title="Wed" data-i18n-title="wed">
+                            <input type="checkbox" name="CronMWeek" value="THU" lay-skin="primary" title="Thu" data-i18n-title="thu">
+                            <input type="checkbox" name="CronMWeek" value="FRI" lay-skin="primary" title="Fri" data-i18n-title="fri">
+                            <input type="checkbox" name="CronMWeek" value="SAT" lay-skin="primary" title="Sat" data-i18n-title="sat">
+                            <input type="checkbox" name="CronMWeek" value="SUN" lay-skin="primary" title="Sun" data-i18n-title="sun">
+                        </div>
+                    </div>
+                    <div style="clear"></div>
+                    <div class="layui-inline" style="margin-top:5px;">
+                        <label class="layui-form-label" for="CronTimePoint" data-i18n-text="fld-CronTimePoint">Start Time</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" id="CronWTimePoint" name="CronWTimePoint" autocomplete="off" readonly="readonly" placeholder="HH:mm">
+                        </div>
+                    </div>
+                </div>
+                <div id="monthly" style="display:none; margin-left:10px;">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline" style="width:120px;">
+                            <input type="radio" name="CronMMode_ForMonthly" value="monthday" title="Per Day" checked="" data-i18n-title="lbl-per-day">
+                        </div>
+                        <div class="layui-inline" style="margin-left:10px; width:600px;">
+                            <input type='checkbox' name='CronMonthSet' value='1' lay-skin='primary' title='1'>
+                            <input type='checkbox' name='CronMonthSet' value='2' lay-skin='primary' title='2'>
+                            <input type='checkbox' name='CronMonthSet' value='3' lay-skin='primary' title='3'>
+                            <input type='checkbox' name='CronMonthSet' value='4' lay-skin='primary' title='4'>
+                            <input type='checkbox' name='CronMonthSet' value='5' lay-skin='primary' title='5'>
+                            <input type='checkbox' name='CronMonthSet' value='6' lay-skin='primary' title='6'>
+                            <input type='checkbox' name='CronMonthSet' value='7' lay-skin='primary' title='7'>
+                            <input type='checkbox' name='CronMonthSet' value='8' lay-skin='primary' title='8'>
+                            <input type='checkbox' name='CronMonthSet' value='9' lay-skin='primary' title='9'>
+                            <input type='checkbox' name='CronMonthSet' value='10' lay-skin='primary' title='10'>
+                            <input type='checkbox' name='CronMonthSet' value='11' lay-skin='primary' title='11'>
+                            <input type='checkbox' name='CronMonthSet' value='12' lay-skin='primary' title='12'>
+                            <input type='checkbox' name='CronMonthSet' value='13' lay-skin='primary' title='13'>
+                            <input type='checkbox' name='CronMonthSet' value='14' lay-skin='primary' title='14'>
+                            <input type='checkbox' name='CronMonthSet' value='15' lay-skin='primary' title='15'>
+                            <input type='checkbox' name='CronMonthSet' value='16' lay-skin='primary' title='16'>
+                            <input type='checkbox' name='CronMonthSet' value='17' lay-skin='primary' title='17'>
+                            <input type='checkbox' name='CronMonthSet' value='18' lay-skin='primary' title='18'>
+                            <input type='checkbox' name='CronMonthSet' value='19' lay-skin='primary' title='19'>
+                            <input type='checkbox' name='CronMonthSet' value='20' lay-skin='primary' title='20'>
+                            <input type='checkbox' name='CronMonthSet' value='21' lay-skin='primary' title='21'>
+                            <input type='checkbox' name='CronMonthSet' value='22' lay-skin='primary' title='22'>
+                            <input type='checkbox' name='CronMonthSet' value='23' lay-skin='primary' title='23'>
+                            <input type='checkbox' name='CronMonthSet' value='24' lay-skin='primary' title='24'>
+                            <input type='checkbox' name='CronMonthSet' value='25' lay-skin='primary' title='25'>
+                            <input type='checkbox' name='CronMonthSet' value='26' lay-skin='primary' title='26'>
+                            <input type='checkbox' name='CronMonthSet' value='27' lay-skin='primary' title='27'>
+                            <input type='checkbox' name='CronMonthSet' value='28' lay-skin='primary' title='28'>
+                            <input type='checkbox' name='CronMonthSet' value='29' lay-skin='primary' title='29'>
+                            <input type='checkbox' name='CronMonthSet' value='30' lay-skin='primary' title='30'>
+                            <input type='checkbox' name='CronMonthSet' value='31' lay-skin='primary' title='31'>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="layui-inline" style="margin-top:5px;">
+                        <div class="layui-input-inline" style="width: 120px;">
+                            <input type="radio" name="CronMMode_ForMonthly" value="serialmode" title="By Freq" data-i18n-title="lbl-per-freq">
+                        </div>
+                        <div class="layui-input-inline" style="width:700px;">
+                            <label class="layui-form-label" data-i18n-text="lbl-run-each">Run each</label>
+                            <div class="layui-input-inline" style="width:40px;">
+                                <input class="layui-input" id="CronMStep" name="CronMStep" value="1" style="width:40px;" autocomplete="off">
+                            </div>
+                            <label class="layui-form-label" data-i18n-text="lbl-month-on">month，on</label>
+                            <div class="layui-input-inline" style="width:90px;">
+                                <select id="CronMSerial" name="CronMSerial" lay-filter="CronMSerial">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                            <label class="layui-form-label" style="width:80px;" data-i18n-text="lbl-st-rd-th">st/rd/th </label>
+                            <div class="layui-input-inline" style="width:90px;">
+                                <select id="CronWeekSet" name="CronWeekSet" lay-filter="CronWeekSet">
+                                    <option value="MON" data-i18n-text="mon"></option>
+                                    <option value="TUE" data-i18n-text="tue"></option>
+                                    <option value="WED" data-i18n-text="wed"></option>
+                                    <option value="THU" data-i18n-text="thu"></option>
+                                    <option value="FRI" data-i18n-text="fri"></option>
+                                    <option value="SAT" data-i18n-text="sat"></option>
+                                    <option value="SUN" data-i18n-text="sun"></option>
+                                </select>
+                            </div>
+                            <label class="layui-form-label" data-i18n-text="lbl-week-day">Week day</label>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="margin-left:-10px; margin-top:5px;">
+                        <label class="layui-form-label" for="CronTimePoint" data-i18n-text="fld-CronTimePoint">Start Time</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" id="CronMTimePoint" name="CronMTimePoint" autocomplete="off" readonly="readonly" placeholder="HH:mm">
+                        </div>
+                    </div>
+                </div>
+                <div id="yearly" style="display:none;">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" data-i18n-text="lbl-month">Month</label>
+                        <div class="layui-input-inline" style="width:600px;">
+                            <input type='checkbox' name='CronYearMonthSet' value='1' lay-skin='primary' title='Jan' data-i18n-title="jan">
+                            <input type='checkbox' name='CronYearMonthSet' value='2' lay-skin='primary' title='Feb' data-i18n-title="feb">
+                            <input type='checkbox' name='CronYearMonthSet' value='3' lay-skin='primary' title='Mar' data-i18n-title='mar'>
+                            <input type='checkbox' name='CronYearMonthSet' value='4' lay-skin='primary' title='Apr' data-i18n-title='apr'>
+                            <input type='checkbox' name='CronYearMonthSet' value='5' lay-skin='primary' title='May' data-i18n-title='may'>
+                            <input type='checkbox' name='CronYearMonthSet' value='6' lay-skin='primary' title='Jun' data-i18n-title='jun'>
+                            <input type='checkbox' name='CronYearMonthSet' value='7' lay-skin='primary' title='Jul' data-i18n-title='jul'>
+                            <input type='checkbox' name='CronYearMonthSet' value='8' lay-skin='primary' title='Aug' data-i18n-title='aug'>
+                            <input type='checkbox' name='CronYearMonthSet' value='9' lay-skin='primary' title='Sep' data-i18n-title='sep'>
+                            <input type='checkbox' name='CronYearMonthSet' value='10' lay-skin='primary' title='Oct' data-i18n-title='oct'>
+                            <input type='checkbox' name='CronYearMonthSet' value='11' lay-skin='primary' title='Nov' data-i18n-title='nov'>
+                            <input type='checkbox' name='CronYearMonthSet' value='12' lay-skin='primary' title='Dec' data-i18n-title='dec'>
+                        </div>
+                    </div>
+                    <div style="clear"></div>
+                    <div class="layui-inline" style="margin-top:5px;">
+                        <label class="layui-form-label" data-i18n-text="lbl-day">Day</label>
+                        <div class="layui-inline" style="width:90px;">
+                            <select id="CronDaySet" name="CronDaySet" lay-filter="CronDaySet">
+                                <option value='1'>1</option>
+                                <option value='2'>2</option>
+                                <option value='3'>3</option>
+                                <option value='4'>4</option>
+                                <option value='5'>5</option>
+                                <option value='6'>6</option>
+                                <option value='7'>7</option>
+                                <option value='8'>8</option>
+                                <option value='9'>9</option>
+                                <option value='10'>10</option>
+                                <option value='11'>11</option>
+                                <option value='12'>12</option>
+                                <option value='13'>13</option>
+                                <option value='14'>14</option>
+                                <option value='15'>15</option>
+                                <option value='16'>16</option>
+                                <option value='17'>17</option>
+                                <option value='18'>18</option>
+                                <option value='19'>19</option>
+                                <option value='20'>20</option>
+                                <option value='21'>21</option>
+                                <option value='22'>22</option>
+                                <option value='23'>23</option>
+                                <option value='24'>24</option>
+                                <option value='25'>25</option>
+                                <option value='26'>26</option>
+                                <option value='27'>27</option>
+                                <option value='28'>28</option>
+                                <option value='29'>29</option>
+                                <option value='30'>30</option>
+                                <option value='31'>31</option>
+                            </select>
+                        </div>
+                    </div> 
+                    <div style="clear"></div>
+                    <div class="layui-inline" style="margin-top:5px;">
+                        <label class="layui-form-label" for="CronTimePoint" data-i18n-text="fld-CronTimePoint">Start Time</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" id="CronYearTimePoint" name="CronYearTimePoint" autocomplete="off" readonly="readonly" placeholder="HH:mm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="ScheduleID" name="ScheduleID" style="display:none;" />
+                    <input id="PackageID" name="PackageID" style="display:none;" lay-verify="required"/>
+                    <input id="ScheduleOwnerID" name="ScheduleOwnerID" style="display:none;" />
+                    <input id="CronOrSimpleIntervalVal" name="CronOrSimpleIntervalVal" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        //让当前子窗体自动调整高度适应内容高度
+        var _packageID = '';
+        var _preCallFun = null;
+        var _subIndex = -1;
+        var form;
+
+        function LoadSchedulerInfo(schID, pkgID, callFun) {
+            _preCallFun = callFun;
+            _packageID = pkgID;
+
+            layui.config({
+                base: '../../Scripts/layuiadmin/lib/Extend/'
+            }).extend({
+                selectM: 'selectM'
+            }).use(['form', 'selectM', 'laydate'], function () {
+                form = layui.form;
+                var $ = layui.$;
+                var selectM = layui.selectM;
+                var laydate = layui.laydate;
+
+                _packageID=pkgID;
+                $('#PackageID').val(pkgID);
+                laydate.render({
+                    elem: '#CronStartDate',
+                    format:'yyyy-MM-dd',
+                    value: new Date().toLocaleDateString().replace('/','-').repeat('/','-'),
+                    lang:'en'
+                });
+                laydate.render({
+                    elem: '#CronEndDate',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#PublishTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#CronTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#CronWTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#CronMTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#CronYearTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#CronOTTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+                laydate.render({
+                    elem: '#CronDTimePoint',
+                    type: 'time',
+                    lang: 'en'
+                });
+
+                My_Init_Package_TaskGroup_DropList($, form, _packageID, 'TaskGroupID', false);
+                My_Init_Frequency($, form, 'CronFrequency',false);
+                showOneTime('onetime');
+
+                if (schID != '') {
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Get_Package_SchedulerItem',
+                        type: 'POST',
+                        async:false,
+                        data: { ScheduleID: schID },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    if (_data.data.CronFrequency == 'OneTime') {
+                                        _data.data.CronOTTimePoint = _data.data.CronTimePoint;
+                                    } else if (_data.data.CronFrequency == 'Daily') {
+                                        _data.data.CronDTimePoint = _data.data.CronTimePoint;
+                                    } else if (_data.data.CronFrequency == 'Hourly') {
+                                        _data.data.CronMMode_ForHourly = _data.data.CronMMode;
+                                        if (_data.data.CronMMode == 'hour')
+                                        {
+                                            _data.data.CronMHMinutes_forHour = _data.data.CronMMinutes;
+                                            _data.data.CronMMinutes = 0;
+                                        }
+                                        else {
+                                            _data.data.CronMHMinutes_forHour = 0;
+                                            _data.data.CronMHour = 0;
+                                        }
+                                        _data.data.CronMHMinutes = _data.data.CronMMinutes;
+                                    } else if (_data.data.CronFrequency == 'Weekly')
+                                    {
+                                        var chkV = _data.data.CronMWeek;
+                                        $('#weekly input:checkbox').each(function (index, item) {
+                                            var curV = $(this).val();
+                                            if (chkV.indexOf(curV) > -1)
+                                                $(this).attr('checked', true);
+                                            else
+                                                $(this).attr('checked', false);
+                                        });
+                                        delete _data.data['CronMWeek'];
+                                        _data.data.CronWTimePoint = _data.data.CronTimePoint;
+                                    }
+                                    else if (_data.data.CronFrequency == 'Monthly') {
+                                        _data.data.CronMMode_ForMonthly = _data.data.CronMMode;
+                                        if (_data.data.CronMMode == 'monthday') {
+                                            var chkMV = _data.data.CronMonthSet;
+                                            $('#monthly input:checkbox').each(function (index, item) {
+                                                var curMV = $(this).val();
+                                                if (chkMV.indexOf(','+curMV+',') >-1)
+                                                    $(this).attr('checked', true);
+                                                else
+                                                    $(this).attr('checked', false);
+                                            });
+                                            delete _data.data['CronMonthSet'];
+                                            $('#CronMStep').val('1');
+                                            $('#CronMSerial').val('1');
+                                            $('#CronWeekSet').val('MON');
+                                        }
+                                        _data.data.CronMTimePoint = _data.data.CronTimePoint;
+                                    } else if (_data.data.CronFrequency == 'Yearly') {
+                                        var chkYV = _data.data.CronMonthSet;
+                                        $('#yearly input:checkbox').each(function (index, item) {
+                                            var curYV = $(this).val();
+                                            if (chkYV.indexOf(',' + curYV + ',') > -1)
+                                                $(this).attr('checked', true);
+                                            else
+                                                $(this).attr('checked', false);
+                                        });
+                                        delete _data.data['CronMonthSet'];
+                                        _data.data.CronYearTimePoint = _data.data.CronTimePoint;
+                                    }
+                                    showOneTime(_data.data.CronFrequency);
+                                    form.val('SchedulerForm', _data.data);
+                                }
+                                else {
+                                    alert('Invalid ScheduleID ID');
+                                }
+                            }
+                            else
+                                layer.alert("无效服务调用.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                } else {
+                    $('#CronStartDate').val()
+                }
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }, { id: 'IsProd' }, { id: 'IsDev' }, { id: 'MustPublishOn' }], data.field);
+                    switch (data.field.CronFrequency) {
+                        case 'OneTime':
+                            data.field.CronMMode = '';
+                            data.field.CronMHour = '';
+                            data.field.CronMMinutes = '';
+                            data.field.CronMWeek = '';
+                            data.field.CronMonthSet = '';
+                            data.field.CronMSerial = '';
+                            data.field.CronWeekSet = '';
+                            data.field.CronMStep = '';
+                            data.field.CronDaySet = '';
+                            data.field.CronOrSimpleIntervalVal = '';
+                            data.field.CronTimePoint = data.field.CronOTTimePoint;
+                            break;
+                        case 'Daily':
+                            data.field.CronMMode = '';
+                            data.field.CronMHour = '';
+                            data.field.CronMMinutes = '';
+                            data.field.CronMWeek = '';
+                            data.field.CronMonthSet = '';
+                            data.field.CronMSerial = '';
+                            data.field.CronWeekSet = '';
+                            data.field.CronMStep = '';
+                            data.field.CronDaySet = '';
+                            data.field.CronTimePoint = data.field.CronDTimePoint;
+                            break;
+                        case 'Hourly':
+                            data.field.CronTimePoint = '';
+                            data.field.CronMWeek = '';
+                            data.field.CronMonthSet = '';
+                            data.field.CronMSerial = '';
+                            data.field.CronWeekSet = '';
+                            data.field.CronMStep = '';
+                            data.field.CronDaySet = '';
+                            data.field.CronMMode = data.field.CronMMode_ForHourly;
+                            if (data.field.CronMMode_ForHourly == 'hour') {
+                                data.field.CronMMinutes = data.field.CronMHMinutes_forHour;
+                            }
+                            else {
+                                data.field.CronMHMinutes_forHour = 0;
+                                data.field.CronMHour = 0;
+                            }
+                            break;
+                        case 'Weekly':
+                            var chkV = [];
+                            $('#weekly input:checkbox:checked').each(function (index, item) {
+                                chkV.push($(this).val());
+                            });
+                            data.field.CronMMode = '';
+                            data.field.CronMHour = '';
+                            data.field.CronMMinutes = '';
+                            data.field.CronMonthSet = '';
+                            data.field.CronMSerial = '';
+                            data.field.CronWeekSet = '';
+                            data.field.CronMStep = '';
+                            data.field.CronDaySet = '';
+                            data.field.CronMWeek = chkV.join();
+                            data.field.CronTimePoint = data.field.CronWTimePoint;
+                            break;
+                        case 'Monthly':
+                            if (data.field.CronMMode_ForMonthly == 'monthday') {
+                                var chkMV = [];
+                                $('#monthly input:checkbox:checked').each(function (index, item) {
+                                    chkMV.push($(this).val());
+                                });
+                                data.field.CronMonthSet = ','+chkMV.join()+',';
+                            } else {
+                                data.field.CronMonthSet = '';
+                            }
+                            data.field.CronMHour = '';
+                            data.field.CronMMinutes = '';
+                            data.field.CronMWeek = '';
+                            data.field.CronDaySet = '';
+                            data.field.CronMMode = data.field.CronMMode_ForMonthly;
+                            data.field.CronTimePoint = data.field.CronMTimePoint;
+                            break;
+                        case 'Yearly':
+                            var chkYV = [];
+                            $('#yearly input:checkbox:checked').each(function (index, item) {
+                                chkYV.push($(this).val());
+                            });
+                            data.field.CronMonthSet = ',' + chkYV.join() + ',';
+                            data.field.CronMMode = '';
+                            data.field.CronMHour = '';
+                            data.field.CronMMinutes = '';
+                            data.field.CronMWeek = '';
+                            data.field.CronMSerial = '';
+                            data.field.CronWeekSet = '';
+                            data.field.CronMStep = '';
+                            data.field.CronTimePoint = data.field.CronYearTimePoint;
+                            break;
+                    };
+                    data.field.CronOrSimpleIntervalVal = GetCronExpress(data.field);
+                    var _data = JSON.stringify(data.field);
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Set_Package_Scheduler_Update',
+                        type: 'POST',
+                        async:false,
+                        data: { SchedulerItem: _data },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                _preCallFun(item);
+                                parent.layer.close(index);
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+                form.on('select(CronFrequency)', function (data) {
+                    showOneTime(data.value);
+                });
+                $('#btnClose').click(function () {
+                    parent.layer.close(index);
+                });
+                function showOneTime(fre) {
+                    $('#onetime').hide();                    
+                    $('#hourly').hide();
+                    $('#daily').hide();
+                    $('#weekly').hide();
+                    $('#monthly').hide();
+                    $('#yearly').hide();
+                    $('#CronOTTimePoint').removeAttr('lay-verify');
+                    $('#CronDTimePoint').removeAttr('lay-verify');
+                    $('#CronWTimePoint').removeAttr('lay-verify');
+                    $('#CronMTimePoint').removeAttr('lay-verify');
+                    $('#CronYearTimePoint').removeAttr('lay-verify');
+                    $('#CronStartDate').removeAttr('lay-verify');
+                    switch (fre.toLowerCase()) {
+                        case 'onetime':
+                            $('#onetime').show();
+                            $('#CronStartDate').attr('lay-verify', 'required');
+                            $('#CronOTTimePoint').attr('lay-verify', 'required');
+                            break;
+                        case 'daily':
+                            $('#daily').show();
+                            $('#CronDTimePoint').attr('lay-verify', 'required');
+                            break;
+                        case 'hourly':
+                            $('#hourly').show();
+                            break;
+                        case 'weekly':
+                            $('#weekly').show();
+                            $('#CronWTimePoint').attr('lay-verify', 'required');
+                            break;
+                        case 'monthly':
+                            $('#monthly').show();
+                            $('#CronMTimePoint').attr('lay-verify', 'required');
+                            break;
+                        case 'yearly':
+                            $('#yearly').show();
+                            $('#CronYearTimePoint').attr('lay-verify', 'required');
+                            break;
+                    }
+                };
+                function GetCronExpress(o) {
+                    var cron = '';
+                    var timeH = '';
+                    var timeM = '';
+                    var timeS = '';
+                    var dateObj = new Date('1900-01-01 '+o.CronTimePoint);
+                    if (dateObj != null) {
+                        var timeH = dateObj.getHours();
+                        var timeM = dateObj.getMinutes();
+                        var timeS = dateObj.getSeconds();
+                    }
+
+                    switch (o.CronFrequency) {
+                        case 'Hourly':
+                            switch (o.CronMMode) {
+                                case 'hour':
+                                    cron = '0 ' + o.CronMMinutes + ' 0/' + o.CronMHour + ' * * ?';
+                                    break;
+                                case "minutes":
+                                    cron = '0 0/' + o.CronMMinutes + ' * * * ?';
+                                    break;
+                            }
+                            break;
+                        case "Daily":
+                            cron = timeS + ' ' + timeM + ' ' + timeH + ' ' + '* * ?';
+                            break;
+                        case "Weekly":
+                            cron = timeS + ' ' + timeM + ' ' + timeH + ' ' + '* * ' + o.CronMWeek;
+                            break;
+                        case "Monthly":
+                            switch (o.CronMMode) {
+                                case "monthday":
+                                    cron = timeS + ' ' + timeM + ' ' + timeH + ' ' + CleanArrayList(o.CronMonthSet) + ' * ?';
+                                    break;
+                                case "serialmode":
+                                    cron = timeS + ' ' + timeM + ' ' + timeH + ' ? ' + '1/' + o.CronMStep + ' ' + ConvertWeekDay(o.CronWeekSet) + '#' + o.CronMSerial;
+                                    break;
+                            }
+                            break;
+                        case "Yearly":
+                            cron = timeS + ' ' + timeM + ' ' + timeH + ' ' + o.CronDaySet + ' ' + CleanArrayList(o.CronMonthSet) + ' ?';
+                            break;
+                    }
+                    return cron;
+                }
+                $('#grpOwner').click(function () {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('share-title-user'),
+                        fixed: false,
+                        maxmin: true,
+                        layerMode: true,
+                        content: '../share/shareEmployeeSearch.html?v=' + My_GetTimeNumberList(),
+                        zIndex: layer.zIndex,
+                        id: 'rootWindows2',
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('dbOwner', $('#ScheduleOwnerID').val(), function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        $('#SchedulerOwnerName').val(returnData.data[0].Name);
+                                        $('#ScheduleOwnerID').val(returnData.data[0].UserID);
+                                    }
+                                }
+                            });
+                        }
+                    })
+                });
+
+                function CleanArrayList(orgA) {
+                    var newA = [];
+                    if (orgA != null && orgA != '') {
+                        $.each(orgA.split(','), function (index, elem) {
+                            if (elem != null && elem != '')
+                                newA.push(elem);
+                        });
+                    }
+                    return newA.join(',');
+                }
+                function ConvertWeekDay(weekName) {
+                    var wd = 1;
+                    switch (weekName) {
+                        case 'MON':
+                            wd = 1;
+                            break;
+                        case 'TUE':
+                            wd = 2;
+                            break;
+                        case 'WED':
+                            wd = 3;
+                            break;
+                        case 'THU':
+                            wd = 4;
+                            break;
+                        case 'FRI':
+                            wd = 5;
+                            break;
+                        case 'SAT':
+                            wd = 6;
+                            break;
+                        case 'SUN':
+                            wd = 7;
+                            break;
+                    }
+                    return wd;
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
+
+
+
+

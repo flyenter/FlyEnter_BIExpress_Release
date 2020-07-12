@@ -1,0 +1,100 @@
+﻿<script type="text/html" id="myIsEnabled">
+    {{#  if(d.IsEnabled === 1){}}
+    <i class="fa fa-check"></i>
+    {{#  } }}
+</script>
+<script type="text/html" id="myIsAuditNeed">
+    {{#  if(d.IsAuditNeed === 1){ }}
+    <i class="fa fa-check-square-o" title="Result Aduit Needed"></i>
+    {{#  } }}
+</script>
+<script type="text/html" id="myHasCondition">
+    {{#  if(d.hasPreCondition === 1){ }}
+    <i class="fa fa-question-circle" title="Pre-Condition Setting"></i>
+    {{#  } }}
+</script>
+<script type="text/html" id="myIsActivated">
+    {{#  if(d.IsActivated === 1){ }}
+    <i class="fa fa-check"></i>
+    {{#  } }}
+</script>
+
+<script type="text/html" id="myTaskCategory">
+    {{# if(d.TaskCategory.indexOf('DispatchToWX')>-1){ }}
+    <i class="fa fa-wechat" title="Dispatch message to WeChat - {{d.TaskCategory +' - '+ d.DstDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('DispatchToFileCopy')>-1){ }}
+    <i class="fa fa-copy" title="File Copy task - {{d.TaskCategory +' - '+ d.SrcDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('FetchDB')>-1){ }}
+    <i class="fa fa-database" title="Fecth data task - {{d.TaskCategory +' - '+ d.SrcDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory=='FetchShareFolder'){ }}
+    <i class="fa fa-folder-open-o" title="Fecth data task - {{d.TaskCategory +' - '+ d.SrcDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory=='FetchSharePoint'){ }}
+    <i class="flyicon-sharepoint"></i>
+    {{# } else if(d.TaskCategory=='LogicSwitch'){ }}
+    <i class="fa fa-random" title="Fecth data task - {{d.TaskCategory +' - '+ d.SrcDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory=='ApproveNode'){ }}
+    <i class="fa fa-check-square-o" title="Approver task - {{d.TaskCategory +' - '+ d.SrcDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory=='SYS_CaseClean'){ }}
+    <i class="fa fa-trash-o" title="Clean Working DB task - {{d.TaskCategory}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('Revise')>-1){ }}
+    <i class="fa fa-edit" title="Data revision task - {{d.TaskCategory}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('Fetch')>-1){ }}
+    <i class="fa fa-sign-in" title="Fecth data task - {{d.TaskCategory +' - '+ d.SrcDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('Dispatch')>-1){ }}
+    <i class="fa fa-truck" title="Dispatch data task - {{d.TaskCategory + ' - ' + d.DstDataSourceName}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('Exec')>-1){ }}
+    <i class="fa fa-code" title="Data produce task - {{d.TaskCategory}}"></i>
+    {{# } else if(d.TaskCategory.indexOf('GenerateExcel')>-1){ }}
+    {{# if(d.TaskStatus=='Completed'){ }}
+    <i class="fa fa-file-excel-o" title="Generate Excel Report task - {{d.TaskCategory}}" lay-event="downloadExcel" style="cursor:pointer"></i>
+    {{# } else { }}
+    <i class="fa fa-file-excel-o" title="Generate Excel Report task - {{d.TaskCategory}}"></i>
+    {{# } }}
+    {{# } else if(d.TaskCategory.indexOf('SendEmail')>-1){ }}
+    <i class="fa fa-envelope-o" title="Send email task - {{d.TaskCategory}}"></i>
+    {{# } else { }}
+    <i class="fa fa-gear" title="{{d.TaskCategory}}"></i>
+    {{# } }}
+</script>
+<script type="text/html" id="myAttachmentType">
+    {{# if(d.IsTaskRelated==1){ }}
+    <i class="fa fa-gear" title="Generator Result"></i>
+    {{# } else { }}
+    <i class="fa fa-paperclip" title="Uploaded Files"></i>
+    {{# } }}
+</script>
+<script type="text/html" id="myConditionItemType">
+    {{# if(d.IsConditionGroup==1){ }}
+    <i class="fa fa-cubes" title="Condition Group"></i>
+    {{# } else { }}
+    <i class="fa fa-cube" title="Condition Item"></i>
+    {{# } }}
+</script>
+
+<script type="text/html" id="myRowAndSubEdit">
+    <div class="layui-btn-group layui-inline">
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="add-sub-dept">Create Sub</a>
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit-dept">Edit</a>
+        <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="del-dept"> Remove</a>
+    </div>
+</script>
+<script type="text/html" id="myRowEdit">
+    <div class="layui-btn-group layui-inline">
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit"> <span data-i18n-text="btn-edit">{{ $.i18n.prop('btn-edit') }}</span></a>
+        <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="delete"> <span data-i18n-text="btn-remove">{{ $.i18n.prop('btn-remove')}}</span></a>
+    </div>
+</script>
+<script type="text/html" id="myRowRemove">
+    <div class="layui-btn-group layui-inline">
+        <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="deleteAttachment"> <span data-i18n-text="btn-remove">{{ $.i18n.prop('btn-remove') }}</span></a>
+    </div>
+</script>
+
+<script type="text/html" id="myConditionItemEdit">
+    <div class="layui-btn-group layui-inline">
+        {{# if(d.IsConditionGroup==1){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="add-sub-item"> <span data-i18n-text='btn-add-sub'>{{ $.i18n.prop('btn-add-sub') }}</span></a>
+        {{# } }}
+        <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="del-item"> <span data-i18n-text='btn-remove'>{{ $.i18n.prop('btn-remove') }}</span></a>
+    </div>
+</script>

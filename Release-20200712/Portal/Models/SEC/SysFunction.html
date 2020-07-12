@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-security" />
+    <script src="../../Scripts/boot.js"></script>
+    <style type="text/css">
+        .layui-table-body .layui-table-cell {
+            text-align: left !important;
+        }
+    </style>
+</head>
+<body style="background-color:white;">
+    <div class="feStandardForm">
+        <div class="layui-form-item">
+            <div class="layui-btn-group layui-inline">
+                <button class="layui-btn layui-btn-primary" id="btn-search"><i class="fa fa-refresh"></i> <span data-i18n-text="btn-search">Refresh</span></button>
+                <button class="layui-btn layui-btn-primary" id="btn-add-dept"><i class="fa fa-file"></i> <span data-i18n-text='btn-add-top-feature'>Create Top Feature</span></button>
+                <button class="layui-btn layui-btn-primary" id="btn-expand"><i class="fa fa-arrow-down"></i> <span data-i18n-text='btn-expand-all'>Expand All</span></button>
+                <button class="layui-btn layui-btn-primary" id="btn-fold"><i class="fa fa-arrow-up"></i> <span data-i18n-text='btn-fold-all'>Fold All</span></button>
+            </div>
+        </div>
+        <table id="tblSysFunction" class="layui-tab layui-form layui-hide" lay-filter="tblSysFunction"></table>
+    </div>
+    <div id="columnTemplate"></div>
+    <script type="text/html" id="myIsPopup">
+        {{#  if(d.IsPopup === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myIcon">
+        {{#  if(d.IconKey !=''){ }}
+        <div style="text-align:center"><i class='fa  {{ d.IconKey}} '></i></div>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myNameTemplate">
+        <div style="text-align:left;background-color:yellow;">{{d.Name}}</div>
+    </script>
+    <script>
+        var urlLogicDelete = '../../Data/svcSecurityProvider.aspx?method=Set_SysFunction_LogicDelete';
+        var _subIndex = -1;
+        var form;
+
+        layui.config({
+            base: '../../Scripts/layuiadmin/lib/Extend/'
+        }).extend({
+            treetable: 'treetable-lay/treetable'
+        }).use(['table', 'form', 'element', 'treetable'], function () {
+            form = layui.form;
+            var $ = layui.jquery;
+            var treetable = layui.treetable;
+            var table = layui.table;
+            var defFunID = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+
+            $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+            var renderTable = function () {
+                treetable.render({
+                    elem: '#tblSysFunction',
+                    url: '../../Data/svcSecurityProvider.aspx?method=Get_SysFunctionList',
+                    page: false,
+                    treeIdName: 'FunID',
+                    treePidName: 'ParentFunID',
+                    treeSpid: defFunID,
+                    treeColIndex: 1,
+                    cols: [[
+                        { type: 'numbers' },
+                        { field: 'FunTitle', title: 'Feature', width: 220},
+                        { field: 'FunKey', title: 'Key', width: 120},
+                        { field: 'FunURL', title: 'Linkage'},
+                        { field: 'IconKey', title: 'Icon', width: 40, templet: '#myIcon' },
+                        { field: 'IsPopup', title: 'Pop', width: 40, templet: '#myIsPopup' },
+                        { field: 'IsEnabled', title: 'Rdy', width: 40, templet: '#myIsEnabled' },
+                        { field: 'FunSortBy', title: 'Sort', width: 50 },
+                        { field: 'operation', fixed: 'right', title: 'Operate', toolbar: '#myRowAndSubEdit', width: 170 }
+                    ]],
+                    done: function () {
+                        refreshLanguage();
+                    }
+                });
+            };
+            renderTable();
+
+            /*检测行内按钮*/
+            table.on('tool(tblSysFunction)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'del-dept') {
+                    var _IDs = [];
+                    _IDs.push({ 'FunID': data.FunID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    RemoveSysFunctionItem(_IDs);
+                } else if (obj.event == 'add-sub-dept') {
+                    EditSysFunctionItem('', data.FunID, data.FunTitle);
+                } else if (obj.event == 'edit-dept') {
+                    EditSysFunctionItem(data.FunID, data.ParentFunID, data.ParentFunTitle);
+                }
+            });
+            /*检测列表行双击事件*/
+            table.on('rowDouble(tblSysFunction)', function (obj) {
+                var data = obj.data;
+                EditSysFunctionItem(data.FunID, '', '');
+            });
+            //table.on('row(tblSysFunction)', function (obj) {
+            //    obj.tr.css({ 'background': '#5FB878', 'color': 'white' }).siblings().removeAttr('style')
+            //});
+
+            $('#btn-search').click(function () {
+                renderTable();
+            });
+            $('#btn-add-dept').click(function () {
+                EditSysFunctionItem('', defFunID, '');
+            });
+            $('#btn-expand').click(function () {
+                treetable.expandAll('#tblSysFunction');
+            });
+            $('#btn-fold').click(function () {
+                treetable.foldAll('#tblSysFunction');
+            });
+            function EditSysFunctionItem(funID, pareFunID, pareFunTitle) {
+                layer.open({
+                    type: 2,
+                    area: ['920px', '500px'],
+                    title: $.i18n.prop('title-system-function'),
+                    fixed: false,
+                    maxmin: true,
+                    content: 'SysFunctionItem.html?' + Date.now.toString(),
+                    id: 'rootWindows',
+                    success: function (layero, index) {
+                        _subIndex = index;
+                        var iCurFrame = window['layui-layer-iframe' + index];
+                        iCurFrame.LoadSysFunctionItem(funID, pareFunID, pareFunTitle, Callback_EditSysFunctionItem);
+                    }
+                });
+            }
+            function Callback_EditSysFunctionItem(returnData) {
+                _subIndex = -1;
+                if (returnData != null && returnData != '')
+                    renderTable();
+            }
+
+            function RemoveSysFunctionItem(rows) {
+                Shared_Record_Remove($, rows, urlLogicDelete, renderTable);
+            }
+        });
+    </script>
+</body>
+</html>

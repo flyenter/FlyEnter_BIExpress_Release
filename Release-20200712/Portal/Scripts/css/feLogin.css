@@ -1,0 +1,90 @@
+﻿body {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    background-color: #373d41 !important;
+    font-family: Arial,Arial Black,FontAwesome;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.login {
+    width: 1200px;
+    height: 580px;
+    margin: 0px auto;
+}
+
+    .login .login-topbar {
+        height: 60px;
+        position: relative;
+    }
+
+        .login .login-topbar .logo {
+            margin-left: 10px;
+            transform: translateY(30%);
+        }
+
+            .login .login-topbar .logo img {
+                z-index: 1;
+                height: 40px;
+            }
+
+    .login .login-area {
+        width: inherit;
+        height: inherit;
+        position: fixed;
+    }
+
+        .login .login-area .msg {
+            margin-top: 80px;
+            margin-left: 80px;
+            height: 500px;
+            width: 700px;
+            display: inline-block;
+            font-size: 50px;
+            font-family: Arial Black;
+            line-height: 60px;
+        }
+
+        .login .login-area .loginInfo {
+            width: 400px;
+            border: none;
+            position: absolute;
+            right: 50px;
+            border-radius: .25em;
+            -moz-border-radius: .25em;
+            -webkit-border-radius: .25em;
+            border: 1px;
+            /*border-color: gray;*/
+            /*border-style: solid;*/
+            display: inline-block;
+            transform: translateY(20%);
+            /*border: 2px solid white;*/
+            background-color: #c2c2c247;
+        }
+
+            .login .login-area .loginInfo .loginTitle {
+                height: 40px;
+                position: relative;
+                text-align: center;
+                padding-top: 40px;
+                padding-bottom: 10px;
+                font-size: 20px;
+                color: #ddd;
+            }
+
+            .login .login-area .loginInfo hr {
+                margin-top: 20px;
+                height: 2px;
+                border: 2px;
+                border-top: 0px solid white;
+            }
+
+.login-copyright {
+    color: #9b9ea0;
+    letter-spacing: 0.47px;
+    line-height: 30px;
+    position: fixed;
+    top: 90%;
+    left: 40%;
+}

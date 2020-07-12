@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="databaseForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:140px;">
+                    <select id="TaskGroupCategory" lay-filter="TaskGroupCategory"></select>
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-refresh"></i> <span data-i18n-text="btn-refresh">Refresh</span> </button>
+                    <button class="layui-btn layui-btn-primary" data-type="onAdd"><i class="fa fa-plus"></i> <span data-i18n-text="btn-new">New</span></button>
+                    <button class="layui-btn layui-btn-warm" data-type="onRemove"><i class="fa fa-trash"></i> <span data-i18n-text="btn-remove">Remove</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-close">Close</span> </button>
+                </div>
+            </div>
+            <table id="tblWorkingTable" class="layui-hide" lay-filter="tblWorkingTable"></table>
+        </div>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _packageID = '';
+        var _preCallFun = null;
+        var _wkTableID = '';
+        var _subIndex = -1;
+        var urlLogicDelete = '../../Data/svcPackageProvider.aspx?method=Set_Package_WorkingTable_LogicDelete';
+        var form;
+
+        function getPackageWorkingTableList(pkgID, callFun) {
+            _preCallFun = callFun;
+            _packageID = pkgID;
+
+            layui.use(['table', 'form'], function () {
+                var tbl = layui.table;
+                form = layui.form;
+                var $ = layui.$;
+
+                $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+                My_Init_Package_TaskGroup_DropList($, form, _packageID, 'TaskGroupCategory')
+
+                tbl.render({
+                    elem: '#tblWorkingTable',
+                    url: '../../Data/svcPackageProvider.aspx?method=Get_Package_WorkingTableList',
+                    type: 'POST',
+                    where: { PackageID: _packageID },
+                    page: false,
+                    id: 'WorkingTableGrid',
+                    cellMinWidth: 40,
+                    height: 'full-60',
+                    limit: 500,
+                    cols: [[
+                        { type: "checkbox", fixed: 'left' },
+                        { field: "DataTableSchema", title: "Schema", width: 80 },
+                        { field: "DataTableName", title: "Table Name", width: 300 },
+                        { field: "IsEnabled", title: "Rdy", templet: '#myIsEnabled', width: 40 },
+                        { field: "TableCategory", title: "Category" },
+                        { field:"operation",fixed: 'right', title: 'Ops', toolbar: '#myRowEdit', width: 100 }
+                    ]],
+                    done: function (res, curr, count) {
+                        refreshLanguage();
+                        $('tbody [data-field="DataTableName"] .layui-table-cell').css('text-align', 'left');
+                    }
+                });
+
+                /*检测行内按钮*/
+                tbl.on('tool(tblWorkingTable)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event == 'delete') {
+                        var _IDs = [];
+                        _IDs.push({ 'DataTableID': data.DataTableID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                        RemoveWorkingTable(_IDs);
+                    } else if (obj.event == 'edit') {
+                        EditWorkingTableItem(data.WorkingTableID, data.DataTableID);
+                    }
+                });
+
+                /*检测列表行双击事件*/
+                tbl.on('rowDouble(tblWorkingTable)', function (obj) {
+                    var data = obj.data;
+                    EditWorkingTableItem(data.WorkingTableID, data.DataTableID, data.TaskGroupIDs);
+                });
+                tbl.on('row(tblWorkingTable)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+                form.on('select(TaskGroupCategory)', function (data) {
+                    getSearchResult();
+                });
+
+                var $ = layui.$, active = {
+                    onSearch: function () {
+                        getSearchResult();
+                    },
+                    onAdd: function () {
+                        EditWorkingTableItem('');
+                    },
+                    onRemove: function () {
+                        var checkStatus = tbl.checkStatus('WorkingTableGrid');
+                        var data = checkStatus.data;
+                        var _IDs = [];
+                        $.each(data, function (index, elem) {
+                            _IDs.push({ 'WorkingTableID': elem.WorkingTableID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                        });
+                        RemoveWorkingTable(_IDs);
+                    },
+                    onClose: function () {
+                        parent.layer.close(index);
+                    }
+                };
+
+                $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                })
+                function EditWorkingTableItem(wkTableID, dataTableID, taskGroupIDs) {
+                    _wkTableID = wkTableID;
+                    parent.layer.open({
+                        type: 2,
+                        area: ['1000px', '600px'],
+                        title: $.i18n.prop('title-working-table'),
+                        fixed: false,
+                        maxmin: true,
+                        content: '../Comm/DataTableItem.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframe = parent.window['layui-layer-iframe' + index];
+                            iframe.LoadDataTableInfo(dataTableID, wkTableID, _packageID, taskGroupIDs, CallBack_EditWorkingTableItem);
+                        }
+                    });
+                }
+                function CallBack_EditWorkingTableItem(returnData) {
+                    _subIndex = -1;
+                    if (returnData != null) {
+                        var _tblInfo = JSON.parse(returnData);
+                        var _tblID = _tblInfo[0].DataTableID;
+
+                        var _wkItem = {
+                            WorkingTableID: _wkTableID,
+                            DataTableID: _tblID,
+                            PackageID: _packageID,
+                            TaskGroupIDs: _tblInfo[0].TaskGroupIDs
+                        };
+                        var _jsonWkItem = JSON.stringify(_wkItem);
+                        $.ajax({
+                            url: '../../Data/svcPackageProvider.aspx?method=Set_Package_WorkingTable_Update',
+                            type: 'POST',
+                            async: false,
+                            data: { WorkingTableItem: _jsonWkItem },
+                            success: function (data) {
+                                getSearchResult();
+                            },
+                            error: function (data) {
+                                layer.alert(data);
+                            }
+                        });
+
+                        getSearchResult();
+                    }
+                }
+                function RemoveWorkingTable(rows) {
+                    Shared_Record_Remove($, rows, urlLogicDelete, getSearchResult);
+                }
+                function getSearchResult() {
+                    var _ds = $('#TaskGroupCategory');
+                    tbl.reload('WorkingTableGrid', {
+                        page: { curr: 1 },
+                        where: {
+                            PackageID: _packageID,
+                            TaskGroupCategory: _ds.val()
+                        }
+                    });
+                };
+            });
+        }
+
+    </script>
+</body>
+</html>
+

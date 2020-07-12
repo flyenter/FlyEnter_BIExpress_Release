@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+    <script src="../../Scripts/my/shareConstDefinition.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="GenSheetForm">
+            <div class="layui-tab layui-tab-brief" lay-filter="TaskItemTabs" style="margin-top: 0px; height: 400px;">
+                <ul class="layui-tab-title">
+                    <li lay-id="sheetInfo" class="layui-this"><span data-i18n-text='tab-gen-basic'>Basic Info</span></li>
+                    <li lay-id="sheetDataQuery"><span data-i18n-text='tab-gen-data-query'>Data Query</span></li>
+                    <li lay-id="sheetColumnFormat"><span data-i18n-text='tab-gen-data-format'>Data Format</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="SheetName" data-i18n-text="fld-SheetName">Sheet Name</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="SheetName" name="SheetName" lay-verify="required" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Available" data-i18n-title="lbl-IsEnabled" checked>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="SheetStyle" data-i18n-text="fld-SheetStyle">Sheet Style</label>
+                                <div class="layui-input-inline">
+                                    <select id="SheetStyle" name="SheetStyle" lay-filter="SheetStyle"></select>
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <label class="layui-form-label" for="SheetIndex" data-i18n-text="fld-SheetIndex">Sheet Index</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="SheetIndex" name="SheetIndex" autocomplete="off" value="1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataLocationX" data-i18n-text="fld-DataLocationX">DataLoc(Row-Col)</label>
+                                <div class="layui-input-inline" style="width:80px;">
+                                    <input class="layui-input" id="DataLocationX" name="DataLocationX" autocomplete="off" value="1">
+                                </div>
+                                <label class="layui-form-label" style="width:30px;"> - </label>
+                                <div class="layui-input-inline" style="width:80px;">
+                                    <input class="layui-input" id="DataLocationY" name="DataLocationY" autocomplete="off" value="1">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <label class="layui-form-label" for="DataObjectWidth" data-i18n-text="fld-DataObjectWidth">(Weight-Height)</label>
+                                <div class="layui-input-inline" style="width:80px;">
+                                    <input class="layui-input" id="DataObjectWidth" name="DataObjectWidth" autocomplete="off">
+                                </div>
+                                <label class="layui-form-label" style="width:30px;"> - </label>
+                                <div class="layui-input-inline" style="width:80px;">
+                                    <input class="layui-input" id="DataObjectHeight" name="DataObjectHeight" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataObjectName" data-i18n-text="fld-DataObjectName">DatavObjName</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="DataObjectName" name="DataObjectName" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <label class="layui-form-label" for="DataSourceObjectName" data-i18n-text="fld-DataSourceObjectName">Data SrcObjName</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="DataSourceObjectName" name="DataSourceObjectName" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="PivotFilterFields" data-i18n-text="fld-PivotFilterFields">PvtFilterFlds(,)</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="PivotFilterFields" name="PivotFilterFields" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <label class="layui-form-label" for="PivotColumnFields" data-i18n-text="fld-PivotColumnFields">PvtColumeFlds(,)</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="PivotColumnFields" name="PivotColumnFields" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="PivotRowFields" data-i18n-text="fld-PivotRowFields">PivotRowFlds(,)</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="PivotRowFields" name="PivotRowFields" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <label class="layui-form-label" for="PivotValueFields" data-i18n-text="fld-PivotValueFields">PivotValueFlds(,)</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="PivotValueFields" name="PivotValueFields" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="ChartTitle" data-i18n-text="fld-ChartTitle">Chart Title</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="ChartTitle" name="ChartTitle" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <label class="layui-form-label" for="ChartStyle" data-i18n-text="fld-ChartStyle">Chart Style</label>
+                                <div class="layui-input-inline">
+                                    <select id="ChartStyle" name="ChartStyle" lay-filter="ChartStyle"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataObjectType" data-i18n-text="fld-DataObjectType">Chart Type</label>
+                                <div class="layui-input-inline">
+                                    <select id="DataObjectType" name="DataObjectType" lay-filter="DataObjectType"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div style="margin-left:2px;margin-right:5px;">
+                                <div style="width:100%;font-size:15px;">
+                                    <blockquote class="layui-elem-quote" id="lblPreScript">
+                                        <span data-i18n-html="lbl-gen-data-query">These script will be executed on <font color="red">Target</font> Database!</span>
+                                    </blockquote>
+                                </div>
+                                <textarea id="DataSourceSQLScript" name="DataSourceSQLScript" class="layui-textarea" style="height:390px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div class="layui-btn-group layui-inline">
+                                <a id="btnRefreshFormat" class="layui-btn layui-btn-primary"><i class="fa fa-refresh"></i> <span data-i18n-text='btn-RefreshFormat'>Refresh</span></a>
+                                <a id="btnAddFormat" class="layui-btn layui-btn-primary"><i class="fa fa-plus"></i> <span data-i18n-text='btn-AddFormat'>Add Format</span></a>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <table id="tblColFormat" class="layui-hide" lay-filter="tblColFormat"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="SheetID" name="SheetID" style="display:none;" />
+                    <input id="TaskID" name="TaskID" style="display:none;" />
+                    <input id="SheetCategory" name="SheetCategory" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var indexD = parent.layer.getFrameIndex(window.name);
+        var _preCallFun = null;
+        var _subIndex = -1;
+        var form;
+
+        function LoadGenerateSheetInfo(taskID, sheetID, sheetCategory, callFun) {
+            _preCallFun = callFun;
+
+            layui.use(['table', 'form', 'element'], function () {
+                var tbl = layui.table;
+                var element = layui.element;
+                form = layui.form;
+                var $ = layui.$;
+
+                $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+                $('#SheetID').val(sheetID);
+                $('#TaskID').val(taskID);
+                $('#SheetCategory').val(sheetCategory);
+
+                InitComboxWithArray($, form, 'SheetStyle', arrSheetStyle);
+                InitComboxWithArray($, form, 'ChartStyle', arrChartStyle);
+                InitComboxWithArray($, form, 'DataObjectType', arrChartType);
+
+                if (sheetID != '') {
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Get_Package_Task_SheetInfo',
+                        type: 'POST',
+                        async: false,
+                        data: { SheetID: sheetID },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    form.val('GenSheetForm', _data.data);
+                                }
+                                else {
+                                    alert('Invalid Sheet ID');
+                                }
+                            }
+                            else
+                                layer.alert("Invalid Service Call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                };
+                tbl.render({
+                    elem: '#tblColFormat',
+                    url: '../../Data/svcPackageProvider.aspx?method=Get_Package_Task_SheetColumnFormatList',
+                    page: false,
+                    id: 'ColFormatGrid',
+                    limit: 1000,
+                    cellMinWidth: 40,
+                    height: 'full-170',
+                    cols: [[
+                        { type: "numbers", fixed: 'left' },
+                        { field: 'ColumnName', title: 'Column Name', width: 200 },
+                        { field: "DataFormat", title: "Data Format", width: 200 },
+                        { field: "IsEnabled", title: "Rdy", templet: '#myIsEnabled', width: 40 },
+                        {},
+                        { fixed: 'right', title: 'Ops', toolbar: '#myRowEdit', width: 100 }
+                    ]],
+                    where: {
+                        SheetID: sheetID
+                    },
+                    done: function (res, curr, count) {
+                        refreshLanguage();
+                        $('tbody [data-field="ColumnName"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="DataFormat"] .layui-table-cell').css('text-align', 'left');
+                    }
+                });
+                ResetFormat();
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }], data.field);
+                    var _data = JSON.stringify(data.field);
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Set_Package_GenSheet_Update',
+                        type: 'POST',
+                        async: false,
+                        data: { SheetItem: _data },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                _preCallFun();
+                                parent.layer.close(indexD);
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+                tbl.on('row(tblColFormat)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+                tbl.on('rowDouble(tblColFormat)', function (obj) {
+                    var data = obj.data;
+                    EditColumnFormatInfo(data.ColumnFormatID, data.SheetID);
+                });
+                tbl.on('tool(tblColFormat)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event == 'delete') {
+                        var _IDs = [];
+                        _IDs.push({ 'ColumnFormatID': data.ColumnFormatID });
+                        RemoveColumnFormatItem(_IDs);
+                    } else if (obj.event == 'edit') {
+                        EditColumnFormatInfo(data.ColumnFormatID, data.SheetID);
+                    }
+                });
+                $('#btnRefreshFormat').click(function () {
+                    RefreshFormat();
+                });
+                $('#btnAddFormat').click(function () {
+                    var _sheetID = $('#SheetID').val();
+                    EditColumnFormatInfo('', _sheetID);
+                });
+                $('#btnClose').click(function () {
+                    parent.layer.close(indexD);
+                });
+
+
+                function ResetFormat() {
+                    var sheetCategory = $('#SheetCategory').val();
+
+                    if (sheetCategory == 'RawData') {
+                        $('#DataObjectName').attr("readonly", "readonly");
+                        $('#DataSourceObjectName').attr("readonly", "readonly");
+                        $('#PivotFilterFields').attr("readonly", "readonly");
+                        $('#PivotColumnFields').attr("readonly", "readonly");
+                        $('#PivotRowFields').attr("readonly", "readonly");
+                        $('#PivotValueFields').attr("readonly", "readonly");
+                        $('#ChartTitle').attr("readonly", "readonly");
+                        $('#ChartStyle').attr("disabled", "disabled");
+                        $('#DataObjectType').attr("disabled", "disabled");
+                        form.render('select');
+                    } else if (sheetCategory == 'Pivot') {
+                        $('#ChartTitle').attr("readonly", "readonly");
+                        $('#ChartStyle').attr("disabled", "disabled");
+                        $('#DataObjectType').attr("disabled", "disabled");
+                        form.render('select');
+                    } else if (sheetCategory == 'Chart') {
+                        $('#PivotFilterFields').attr("readonly", "readonly");
+                        $('#PivotColumnFields').attr("readonly", "readonly");
+                        $('#PivotRowFields').attr("readonly", "readonly");
+                        $('#PivotValueFields').attr("readonly", "readonly");
+                    }
+
+                    var _sheetID = $('#SheetID').val();
+                    if (_sheetID == null || _sheetID == '') {
+                        $('#btnAddFormat').attr("disabled", "disabled");
+                        $('#btnAddFormat').addClass("layui-disabled");
+                    }
+                }
+                function EditColumnFormatInfo(columnFormatID, sheetID) {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['500px', '350px'],
+                        title: $.i18n.prop('title-gen-column-format'),
+                        fixed: false,
+                        maxmin: true,
+                        content: 'PackageItem_Fun_Generator_ExlColFormatItem.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframe = parent.window['layui-layer-iframe' + index];
+                            iframe.LoadColumnFormatInfo(columnFormatID, sheetID, function () {
+                                _subIndex = -1;
+                                RefreshFormat();
+                            });
+                        }
+                    });
+                }
+                function RemoveColumnFormatItem(rows) {
+                    var urlDelete = '../../Data/svcPackageProvider.aspx?method=Get_Package_Task_SheetColumnFormat_Delete';
+                    Shared_Record_Remove($, rows, urlDelete, RefreshFormat);
+                }
+                function RefreshFormat() {
+                    var _sheetID = $('#SheetID').val();
+                    tbl.reload('ColFormatGrid', {
+                        where: {
+                            SheetID: _sheetID
+                        }
+                    });
+                };
+            });
+        };
+
+        function InitComboxWithArray($, form, objListID, arrList) {
+            $(arrList).each(function (index, el) {
+                $('#' + objListID).append("<option value='" + el.id + "'>" + el.text + "</option>");
+            });
+            form.render('select');
+        };
+        var arrChartStyle = [
+            { id: "None", text: "None" }
+            , { id: "Style1", text: "Style1" }
+            , { id: "Style2", text: "Style2" }
+            , { id: "Style3", text: "Style3" }
+            , { id: "Style4", text: "Style4" }
+            , { id: "Style5", text: "Style5" }
+            , { id: "Style6", text: "Style6" }
+            , { id: "Style7", text: "Style7" }
+            , { id: "Style8", text: "Style8" }
+            , { id: "Style9", text: "Style9" }
+            , { id: "Style10", text: "Style10" }
+            , { id: "Style11", text: "Style11" }
+            , { id: "Style12", text: "Style12" }
+            , { id: "Style13", text: "Style13" }
+            , { id: "Style14", text: "Style14" }
+            , { id: "Style15", text: "Style15" }
+            , { id: "Style16", text: "Style16" }
+            , { id: "Style17", text: "Style17" }
+            , { id: "Style18", text: "Style18" }
+            , { id: "Style19", text: "Style19" }
+            , { id: "Style20", text: "Style20" }
+            , { id: "Style21", text: "Style21" }
+            , { id: "Style22", text: "Style22" }
+            , { id: "Style23", text: "Style23" }
+            , { id: "Style24", text: "Style24" }
+            , { id: "Style25", text: "Style25" }
+            , { id: "Style26", text: "Style26" }
+            , { id: "Style27", text: "Style27" }
+            , { id: "Style28", text: "Style28" }
+            , { id: "Style29", text: "Style29" }
+            , { id: "Style30", text: "Style30" }
+            , { id: "Style31", text: "Style31" }
+            , { id: "Style32", text: "Style32" }
+            , { id: "Style33", text: "Style33" }
+            , { id: "Style34", text: "Style34" }
+            , { id: "Style35", text: "Style35" }
+            , { id: "Style36", text: "Style36" }
+            , { id: "Style37", text: "Style37" }
+            , { id: "Style38", text: "Style38" }
+            , { id: "Style39", text: "Style39" }
+            , { id: "Style40", text: "Style40" }
+            , { id: "Style41", text: "Style41" }
+            , { id: "Style42", text: "Style42" }
+            , { id: "Style43", text: "Style43" }
+            , { id: "Style44", text: "Style44" }
+            , { id: "Style45", text: "Style45" }
+            , { id: "Style46", text: "Style46" }
+            , { id: "Style47", text: "Style47" }
+            , { id: "Style48", text: "Style48" }
+        ];
+        var arrSheetStyle = [
+            { id: "None", text: "None" }
+            , { id: "Custom", text: "Custom" }
+            , { id: "Light1", text: "Light1" }
+            , { id: "Light2", text: "Light2" }
+            , { id: "Light3", text: "Light3" }
+            , { id: "Light4", text: "Light4" }
+            , { id: "Light5", text: "Light5" }
+            , { id: "Light6", text: "Light6" }
+            , { id: "Light7", text: "Light7" }
+            , { id: "Light8", text: "Light8" }
+            , { id: "Light9", text: "Light9" }
+            , { id: "Light10", text: "Light10" }
+            , { id: "Light11", text: "Light11" }
+            , { id: "Light12", text: "Light12" }
+            , { id: "Light13", text: "Light13" }
+            , { id: "Light14", text: "Light14" }
+            , { id: "Light15", text: "Light15" }
+            , { id: "Light16", text: "Light16" }
+            , { id: "Light17", text: "Light17" }
+            , { id: "Light18", text: "Light18" }
+            , { id: "Light19", text: "Light19" }
+            , { id: "Light20", text: "Light20" }
+            , { id: "Light21", text: "Light21" }
+            , { id: "Medium1", text: "Medium1" }
+            , { id: "Medium2", text: "Medium2" }
+            , { id: "Medium3", text: "Medium3" }
+            , { id: "Medium4", text: "Medium4" }
+            , { id: "Medium5", text: "Medium5" }
+            , { id: "Medium6", text: "Medium6" }
+            , { id: "Medium7", text: "Medium7" }
+            , { id: "Medium8", text: "Medium8" }
+            , { id: "Medium9", text: "Medium9" }
+            , { id: "Medium10", text: "Medium10" }
+            , { id: "Medium11", text: "Medium11" }
+            , { id: "Medium12", text: "Medium12" }
+            , { id: "Medium13", text: "Medium13" }
+            , { id: "Medium14", text: "Medium14" }
+            , { id: "Medium15", text: "Medium15" }
+            , { id: "Medium16", text: "Medium16" }
+            , { id: "Medium17", text: "Medium17" }
+            , { id: "Medium18", text: "Medium18" }
+            , { id: "Medium19", text: "Medium19" }
+            , { id: "Medium20", text: "Medium20" }
+            , { id: "Medium21", text: "Medium21" }
+            , { id: "Dark1", text: "Dark1" }
+            , { id: "Dark2", text: "Dark2" }
+            , { id: "Dark3", text: "Dark3" }
+            , { id: "Dark4", text: "Dark4" }
+            , { id: "Dark5", text: "Dark5" }
+            , { id: "Dark6", text: "Dark6" }
+            , { id: "Dark7", text: "Dark7" }
+            , { id: "Dark8", text: "Dark8" }
+            , { id: "Dark9", text: "Dark9" }
+            , { id: "Dark10", text: "Dark10" }
+            , { id: "Dark11", text: "Dark11" }
+        ];
+        var arrChartType = [
+            { id: "BarClustered", text: "BarClustered" }
+            , { id: "Line", text: "Line" }
+            , { id: "Pie", text: "Pie" }
+        ];
+
+    </script>
+</body>
+</html>
+
+
+
+

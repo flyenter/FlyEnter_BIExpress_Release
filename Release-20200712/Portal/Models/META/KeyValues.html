@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-basic" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="keyValuesForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:200px;">
+                    <select id="KeyValuesCategory" name='KeyValuesCategory' lay-filter="KeyValuesCategory"></select>
+                </div>
+                <div class="layui-inline" style="width:100px;">
+                    <input class="layui-input" id="keyword" name="keyword" autocomplete="off" placeholder="Key word" data-i18n-placeholder="lbl-key-words">
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-search"></i> <span data-i18n-text="btn-search">Search</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onAdd"><i class="fa fa-plus"></i> <span data-i18n-text="btn-new">Add</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClean"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-warm" data-type="onRemove"><i class="fa fa-trash"></i> <span data-i18n-text="btn-remove">Remove</span></button>
+                </div>
+            </div>
+            <table id="kvTable" class="layui-hide" lay-filter="kvTable" lay-data="{height:'full-200'}"></table>
+        </div>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var urlLogicDelete = '../../Data/svcCommProvider.aspx?method=Set_KeyValues_LogicDelete';
+        var _subIndex = -1;
+        var form;
+
+        layui.use(['table', 'form'], function () {
+            var tbl = layui.table;
+            form = layui.form;
+            var $ = layui.$;
+
+            $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+            My_Init_KeyValuesCategory($, form, 'KeyValuesCategory');
+
+            var _key = $('#keyword');
+            var _kv = $('#KeyValuesCategory');
+            tbl.render({
+                elem: '#kvTable',
+                url: '../../Data/svcCommProvider.aspx?method=Get_KeyValuesList',
+                page: true,
+                id: 'KeyValuesGrid',
+                limit: 20,
+                cellMinWidth: 40,
+                height: 'full-60',
+                cols: [[
+                    { type: "checkbox", fixed: 'left' },
+                    { field: "ItemKey", title: "Master Key", width: 260 },
+                    { field: "ItemValue", title: "Master Value", width: 260 },
+                    { field: "IsEnabled", title: "Rdy", templet: '#myIsEnabled', width: 40 },
+                    { field: "BizDesc", title: "Desc" },
+                    { field: "UpdatedEmployeeName", title: "Owner" },
+                    { field: "operation", fixed: 'right', title: 'Operator', toolbar: '#myRowEdit', width: 100 }
+                ]],
+                where: {
+                    kvCategory: _kv.val(),
+                    keyword: _key.val()
+                },
+                done: function (res, curr, count) {
+                    refreshLanguage();
+
+                    $('tbody [data-field="ItemKey"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="ItemValue"] .layui-table-cell').css('text-align', 'left');
+                }
+            });
+
+            /*检测行内按钮*/
+            tbl.on('tool(kvTable)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'delete') {
+                    var _IDs = [];
+                    _IDs.push({ 'ID': data.ID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    RemoveKeyValues(_IDs);
+                } else if (obj.event == 'edit') {
+                    EditKeyValuesItem(data.ID, '');
+                }
+            });
+
+            /*检测列表行双击事件*/
+            tbl.on('rowDouble(kvTable)', function (obj) {
+                var data = obj.data;
+                EditKeyValuesItem(data.ID, '');
+            });
+            tbl.on('row(kvTable)', function (obj) {
+                My_SetSelectedRowStyle(obj);
+            });
+            form.on('select(KeyValuesCategory)', function (data) {
+                getSearchResult();
+            });
+
+            var active = {
+                onSearch: function () {
+                    getSearchResult();
+                },
+                onAdd: function () {
+                    var _kvCategory = $('#KeyValuesCategory').val();
+                    EditKeyValuesItem('', _kvCategory);
+                },
+                onClean: function () {
+                    $('#keyword').val('');
+                    $('#KeyValuesCategory').val('');
+                    form.render('select');
+                    getSearchResult();
+                },
+                onRemove: function () {
+                    var checkStatus = tbl.checkStatus('KeyValuesGrid');
+                    var data = checkStatus.data;
+                    var _IDs = [];
+                    $.each(data, function (index, elem) {
+                        _IDs.push({ 'ID': elem.ID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                    });
+                    RemoveKeyValues(_IDs);
+                }
+            };
+
+            $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            })
+
+            function EditKeyValuesItem(kvID, kvCategory) {
+                layer.open({
+                    type: 2,
+                    area: ['600px', '350px'],
+                    title: $.i18n.prop('title-key-value-info'),
+                    fixed: false,
+                    maxmin: true,
+                    content: 'KeyValuesItem.html?v=' + My_GetTimeNumberList(),
+                    id: 'rootWindows',
+                    success: function (layero, index) {
+                        _subIndex = index;
+                        var iframe = window['layui-layer-iframe' + index];
+                        iframe.LoadKeyValuesInfo(kvID, kvCategory, function (returnData) {
+                            _subIndex = -1;
+                            if (returnData != null && returnData != '')
+                                getSearchResult();
+                        });
+                    }
+                });
+            }
+
+            function RemoveKeyValues(rows) {
+                Shared_Record_Remove($, rows, urlLogicDelete, getSearchResult);
+            }
+            function getSearchResult() {
+                var _key = $('#keyword');
+                var _kv = $('#KeyValuesCategory');
+                tbl.reload('KeyValuesGrid', {
+                    page: { curr: 1 },
+                    where: {
+                        kvCategory: _kv.val(),
+                        keyword: _key.val()
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

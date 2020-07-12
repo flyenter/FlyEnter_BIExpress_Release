@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta id="i18n_pagename" content="common" />
+    <link rel="stylesheet" href="Scripts/layuiadmin/layui/css/admin.css" media="all">
+    <script src="Scripts/boot.js"></script>
+    <script src="Scripts/echarts.min.js"></script>
+    <script src="Scripts/jquery.ba-resize.js"></script>
+</head>
+<body>
+    <!--<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+        <legend>
+            <span data-i18n-text="title-flyenter-legend">FlyEnter BI-Express (Schedule Control Platform)</span>
+        </legend>
+    </fieldset>-->
+    <blockquote class="layui-elem-quote">
+        <span data-i18n-html="title-flyenter-legend">Folder for Generator Service Publish</span>
+    </blockquote>
+    <style>
+        .layui-card-body img {
+            width: 90px;
+            height: 90px;
+        }
+
+        .layui-card-body td {
+            text-align: center;
+        }
+
+        .ec-img-four-item {
+            position: relative;
+            flex: 1;
+            margin-right: 8px;
+        }
+    </style>
+    <script>
+        var _curSerialV = My_GetTimeNumberList();
+
+        function newTab(url, tit) {
+            if (top.layui.index) {
+                top.layui.index.openTabsPage(url, tit)
+            } else {
+                window.open(url)
+            }
+        }
+    </script>
+    <div style="margin-top:10px; padding-left:20px;padding-right:20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space12">
+            <div class="layui-col-md8">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div id="myExecInfo" style="height:350px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div id="myTaskInfo" style="height:350px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var myExecChat = {};
+        var myTaskChat = {};
+
+        $(document).ready(function () {
+            Reporting_ExecutionSummary();
+            Reporting_TaskSummary();
+
+            refreshLanguage();
+        });
+
+        $('.layui-card-body').resize(function () {
+            myExecChat.resize();
+            myTaskChat.resize();
+        });
+        function Reporting_ExecutionSummary() {
+            myExecChat = echarts.init(document.getElementById('myExecInfo'));
+            var option = {
+                title: {
+                    text: 'Execution'
+                },
+                legend: {
+                },
+                tooltip: {},
+                dataset: {
+                    dimensions: ['OperationDay', 'ExecCaseQty', 'ExecTaskQty', 'FetchDataVolune'],
+                    source: []
+                },
+                xAxis: { type: 'category' },
+                yAxis: [
+                    { type: 'value' },
+                    { type: 'value' }
+                ],
+                series: [
+                    { type: 'line', yAxisIndex: 0 },
+                    { type: 'line', yAxisIndex: 0 },
+                    { type: 'line', areaStyle: {}, yAxisIndex: 1 }
+                ]
+            };
+            myExecChat.setOption(option);
+            myExecChat.showLoading();
+            $.ajax({
+                url: '../Data/svcPlatformProvider.aspx?method=Get_Reporting_ExecutionSummary',
+                type: 'POST',
+                async: true,
+                success: function (data) {
+                    myExecChat.hideLoading();
+                    if (data != null && data != '') {
+                        var _data = JSON.parse(data);
+                        myExecChat.setOption({
+                            dataset: {
+                                source: _data
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        function Reporting_TaskSummary() {
+            myTaskChat = echarts.init(document.getElementById('myTaskInfo'));
+            var option = {
+                title: {
+                    text: 'Task Category'
+                },
+                legend: {
+                    show: false
+                },
+                tooltip: {},
+                dataset: {
+                    source: []
+                },
+                series: [
+                    { type: 'pie', radius: 60 },
+                ]
+            };
+            myTaskChat.setOption(option);
+            myTaskChat.showLoading();
+            $.ajax({
+                url: '../Data/svcPlatformProvider.aspx?method=Get_Reporting_TaskSummary',
+                type: 'POST',
+                async: true,
+                success: function (data) {
+                    myTaskChat.hideLoading();
+                    if (data != null && data != '') {
+                        var _data = JSON.parse(data);
+                        myTaskChat.setOption({
+                            dataset: {
+                                source: _data
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        function ValidateFeature(funKey) {
+            $.ajax({
+                url: '../Data/svcSecurityProvider.aspx?method=Validate_User_Feature',
+                type: 'POST',
+                async: true,
+                data: { FunctionKey: funKey },
+                success: function (data) {
+                    if (data == null || data == '' || data != 'True') {
+                        $('#' + funKey).click(function (event) {
+                            alert('No access for the feature.');
+                            event.preventDefault();
+                        })
+                    }
+                }
+            });
+        }
+        function refreshLanguage() {
+            execI18n('scripts/i18n/', GetLocalLang());
+        }
+    </script>
+</body>
+</html>

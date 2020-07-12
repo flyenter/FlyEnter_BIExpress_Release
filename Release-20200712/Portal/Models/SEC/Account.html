@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-security" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="accountForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:100px;">
+                    <input class="layui-input" id="keyword" name="keyword" autocomplete="off" placeholder="Key words">
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-search"></i> <span data-i18n-text="btn-search">Search</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onAdd"><i class="fa fa-plus"></i> <span data-i18n-text="btn-new">Add</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClean"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-warm" data-type="onRemove"><i class="fa fa-trash"></i> <span data-i18n-text="btn-remove">Remove</span></button>
+                </div>
+            </div>
+            <table id="dsTable" class="layui-hide" lay-filter="dsTable" lay-data="{height:'full-200'}"></table>
+        </div>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var urlLogicDelete = '../../Data/svcSecurityProvider.aspx?method=Set_Account_LogicDelete';
+        var _subIndex = -1;
+        var form;
+
+        layui.use(['table', 'form'], function () {
+            var tbl = layui.table;
+            form = layui.form;
+            var $ = layui.$;
+
+           $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+            tbl.render({
+                elem: '#dsTable',
+                url: '../../Data/svcSecurityProvider.aspx?method=Get_AccountList',
+                page: true,
+                id: 'AccountGrid',
+                limit: 20,
+                cellMinWidth: 40,
+                height: 'full-60',
+                cols: [[
+                    { type: "checkbox", fixed: 'left' },
+                    { field: "AccountName", title: "Account", width: 260 },
+                    { field: "EmployeeName", title: "Staff Name", width: 150 },
+                    { field: "IsEnabled", title: "Rdy", templet: '#myIsEnabled', width: 40 },
+                    { field: "ExpiredDate", title: "Expired Date", width: 150 },
+                    { field: "DepartmentName", title: "Dept." },
+                    { field: "operation", fixed: 'right', title: '操作', toolbar: '#myRowEdit', width: 100 }
+                ]],
+                done: function (res, curr, count) {
+                    refreshLanguage();
+
+                    $('tbody [data-field="AccountName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="EmployeeName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="DepartmentName"] .layui-table-cell').css('text-align', 'left');
+                }
+            });
+
+            /*检测行内按钮*/
+            tbl.on('tool(dsTable)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'delete') {
+                    var _IDs = [];
+                    _IDs.push({ 'AccountID': data.AccountID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    RemoveAccount(_IDs);
+                } else if (obj.event == 'edit') {
+                    EditAccountItem(data.AccountID);
+                }
+            });
+
+            /*检测列表行双击事件*/
+            tbl.on('rowDouble(dsTable)', function (obj) {
+                var data = obj.data;
+                EditAccountItem(data.AccountID);
+            });
+            tbl.on('row(dsTable)', function (obj) {
+                My_SetSelectedRowStyle(obj);
+            });
+            form.on('select(AccountGrid)', function (data) {
+                getSearchResult();
+            });
+
+            var active = {
+                onSearch: function () {
+                    getSearchResult();
+                },
+                onAdd: function () {
+                    EditAccountItem('');
+                },
+                onClean: function () {
+                    $('#keyword').val('');
+                    getSearchResult();
+                },
+                onRemove: function () {
+                    var checkStatus = tbl.checkStatus('AccountGrid');
+                    var data = checkStatus.data;
+                    var _IDs = [];
+                    $.each(data, function (index, elem) {
+                        _IDs.push({ 'AccountID': elem.AccountID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                    });
+                    RemoveAccount(_IDs);
+                }
+            };
+
+            $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            })
+
+            function EditAccountItem(accountID) {
+                layer.open({
+                    type: 2,
+                    area: ['1000px', '550px'],
+                    title: $.i18n.prop('title-account-infor'),
+                    fixed: false,
+                    maxmin: true,
+                    content: 'AccountItem.html?' + Date.now.toString(),
+                    id: 'rootWindows',
+                    success: function (layero, index) {
+                        _subIndex = index;
+                        var iframe = window['layui-layer-iframe' + index];
+                        iframe.LoadAccountItem(accountID, Callback_EditAccountItem);
+                    }
+                });
+            }
+
+            function Callback_EditAccountItem(returnData) {
+                _subIndex = -1;
+                if (returnData != null && returnData != '')
+                    getSearchResult();
+            }
+
+            function RemoveAccount(rows) {
+                Shared_Record_Remove($, rows, urlLogicDelete, getSearchResult);
+            }
+            function getSearchResult() {
+                var $ = layui.$;
+                var _key = $('#keyword');
+                tbl.reload('AccountGrid', {
+                    page: { curr: 1 },
+                    where: {
+                        keyword: _key.val()
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
+

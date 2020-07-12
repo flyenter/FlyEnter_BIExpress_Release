@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-basic" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="DatabaseAccountItemForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="DatabaseName" data-i18n-text="fld-DatabaseName">Database/App</label>
+                    <div class="grpBtnContainer">
+                        <div class="layui-input-inline grpBtnTxtitem" style="width:514px;">
+                            <input class="layui-input" id="AccountDatabaseName" name="AccountDatabaseName" lay-verify="required" autocomplete="off" readonly="readonly">
+                        </div>
+                        <div class="grpBtnIconItem">
+                            <a id="grpDatabase" class="layui-btn layui-btn-primary"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="AccountCategory" data-i18n-text="fld-AccountCategory">Account Category</label>
+                    <div class="layui-input-inline">
+                        <select id="AccountCategory" name="AccountCategory" lay-verify="required" lay-filter="AccountCategory"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="DataAccessLevel" data-i18n-text="fld-DataAccessLevel">Data Access Level</label>
+                    <div class="layui-input-inline">
+                        <select id="DataAccessLevel" name="DataAccessLevel" lay-verify="required" lay-filter="DataAccessLevel"></select>
+                    </div>
+                </div>
+                <div class="layui-inline" style="margin-left:30px;">
+                    <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Ready" checked="" data-i18n-title="lbl-IsEnabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="AccountDomain" data-i18n-text="fld-AccountDomain">Domain</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="AccountDomain" name="AccountDomain" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="Account" data-i18n-text="fld-Account">Account</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="Account" name="Account" lay-verify="required" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="Password" data-i18n-text="fld-Password">Password</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="Password" name="Password" lay-verify="required" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ExpireDate" data-i18n-text="fld-ExpireDate">Expired Date</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="ExpireDate" name="ExpireDate" autocomplete="off" readonly="readonly">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="AccountOwnerName" data-i18n-text="fld-AccountOwnerName">Owner</label>
+                    <div class="grpBtnContainer">
+                        <div class="layui-input-inline grpBtnTxtitem">
+                            <input class="layui-input" id="AccountOwnerName" name="AccountOwnerName" autocomplete="off" readonly="readonly">
+                        </div>
+                        <div class="grpBtnIconItem">
+                            <a id="grpOwnerID" class="layui-btn layui-btn-primary"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="AccountID" name="AccountID" style="display:none;" />
+                    <input id="DatabaseID" name="DatabaseID" style="display:none;" />
+                    <input id="OwnerID" name="OwnerID" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _preCallFun = null;
+        var _accountID = '';
+        var _subIndex = -1;
+        var form;
+
+        function LoadDatabaseAccountInfo(accID, callFun) {
+            _preCallFun = callFun;
+            _accountID = accID;
+
+            layui.use(['form','laydate'], function () {
+                form = layui.form;
+                var laydate = layui.laydate;
+                var $ = layui.$;
+
+                laydate.render({
+                    elem: '#ExpireDate',
+                    lang:'en'
+                });
+
+                My_Init_AccountCategory($, form, 'AccountCategory', 'true');
+                My_Init_DataAccessLevelCategory($, form, 'DataAccessLevel', false);
+                
+                if (accID != '') {
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_DataBaseAccount_Item',
+                        type: 'POST',
+                        async:false,
+                        data: { AccountID: accID },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    form.val('DatabaseAccountItemForm', _data.data);
+                                    $('#AccountDatabaseName').val('['+_data.data.DSName+'].['+_data.data.DatabaseName+']');
+                                }
+                                else {
+                                    alert('Invalid Account ID');
+                                }
+                            }
+                            else
+                                layer.alert("Invalid Service Call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                }
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }], data.field);
+                    var _data = JSON.stringify(data.field);
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Set_DataBaseAccount_Update',
+                        type: 'POST',
+                        async:false,
+                        data: { AccountItem: _data },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                _preCallFun(item);
+                                parent.layer.close(index);
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+
+                $('#btnClose').click(function () {
+                    parent.layer.close(index);
+                });
+
+                $('#grpDatabase').click(function () {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('title-query-database'),
+                        fixed: false,
+                        maxmin: true,
+                        layerMode: true,
+                        content: '../share/shareDatabaseSearch.html',
+                        zIndex: layer.zIndex,
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('', $('#DatabaseID').val(), function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        $('#AccountDatabaseName').val('[' + returnData.data[0].DSName + '].[' + returnData.data[0].DatabaseName+']');
+                                        $('#DatabaseID').val(returnData.data[0].DatabaseID);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                $('#grpOwnerID').click(function () {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('title-query-user'),
+                        fixed: false,
+                        maxmin: true,
+                        layerMode: true,
+                        content: '../share/shareEmployeeSearch.html',
+                        zIndex: layer.zIndex,
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('dsOwner', $('#OwnerID').val(), function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        $('#AccountOwnerName').val(returnData.data[0].Name);
+                                        $('#OwnerID').val(returnData.data[0].UserID);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        };
+    </script>
+</body>
+</html>
+
+
+
+

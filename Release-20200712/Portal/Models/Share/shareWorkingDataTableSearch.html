@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-shareSearch" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div style="background-color: #fff; padding-top:5px;padding-left:5px;padding-right:5px;">
+        <div id="employeeSearchForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:140px;">
+                    <select id="TaskGroupCategory" lay-filter="TaskGroupCategory"></select>
+                </div>
+                <div class="layui-inline" style="width:100px;">
+                    <input type="text" id="keyword" name="keyword" autocomplete="off" class="layui-input" placeholder="Key Words" data-i18n-placeholder="lbl-key-words">
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" id="onSearch"><i class="fa fa-search"></i> <span data-i18n-text="btn-search">Search</span></button>
+                    <button class="layui-btn layui-btn-primary" id="onClean"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="onConfirm"><i class="fa fa-check"></i> <span data-i18n-text="btn-confirm">Confirm</span></button>
+                    <button class="layui-btn layui-btn-warm" id="onClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-close">Close</span></button>
+                </div>
+            </div>
+            <table id="dsResult" class="layui-hide" lay-filter="dsResult"></table>
+        </div>
+    </div>
+    <script type="text/html" id="myIsEnabled">
+        {{#  if(d.IsEnabled === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _preCallFun = null;
+        var _packageID = '';
+        var form;
+        var _subIndex = -1;
+
+        function SetPreValue(packageID, callFun) {
+            _packageID = packageID;
+            _preCallFun = callFun;
+
+            layui.use(['table', 'form'], function () {
+                var tbl = layui.table;
+                form = layui.form;
+                var $ = layui.$;
+
+                My_Init_Package_TaskGroup_DropList($, form, packageID, 'TaskGroupCategory');
+
+                tbl.render({
+                    elem: '#dsResult',
+                    url: '../../Data/svcCommProvider.aspx?method=Get_Shared_DataTableList',
+                    page: true,
+                    limit: 10,
+                    id: 'mySearchResultGrid',
+                    cellMinWidth: 80,
+                    height: 'full-50',
+                    cols: [[
+                        { type: "radio" },
+                        { field: "DataTableSchema", title: 'Schema', width: 80 },
+                        { field: "DataTableName", title: 'Table Name', width: 220 },
+                        { field: "TableCategory", title: 'Category' },
+                        { field: "TableOwnerName", title: 'Owner' }
+                    ]],
+                    where: {
+                        PackageID: _packageID
+                    },
+                    done: function () {
+                        refreshLanguage();
+
+                        $('tbody [data-field="DataTableName"] .layui-table-cell').css('text-align', 'left');
+                    }
+                });
+
+                form.on('select(TaskGroupCategory)', function (data) {
+                    getSearchAgain();
+                });
+                tbl.on('row(dsResult)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+                tbl.on('rowDouble(dsResult)', function (obj) {
+                    getSelectedItems('yes', obj.data);
+                });
+
+                $('#onClean').click(function () {
+                    $('#keyword').val('');
+                    getSearchAgain();
+                });
+                $('#onClose').click(function () {
+                    getSelectedItems('', '');
+                });
+                $('#onSearch').click(function () {
+                    getSearchAgain();
+                });
+                $('#onConfirm').click(function () {
+                    var chkStatus = tbl.checkStatus('mySearchResultGrid');
+                    if (chkStatus.data.length < 1) {
+                        layer.alert($.i18n.prop('msg-no-item-selected'));
+                    } else
+                        getSelectedItems('yes', '');
+                });
+                function getSearchAgain() {
+                    var _key = $('#keyword').val();
+                    var _taskGroupID = $('#TaskGroupCategory').val();
+
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_Shared_DataTableList',
+                        type: 'GET',
+                        async: false,
+                        data: {
+                            Keyword: _key,
+                            TaskGroupID: _taskGroupID,
+                            PackageID: _packageID
+                        },
+                        success: function (res) {
+                            if (res != null && res != '') {
+                                let _data = JSON.parse(res);
+                                tbl.render({
+                                    elem: '#dsResult',
+                                    page: true,
+                                    limit: 50,
+                                    id: 'mySearchResultGrid',
+                                    cellMinWidth: 80,
+                                    height: 'full-50',
+                                    cols: [[
+                                        { type: "radio" },
+                                        { field: "DataTableSchema", title: 'Schema', width: 80 },
+                                        { field: "DataTableName", title: 'Table Name', width: 220 },
+                                        { field: "TableCategory", title: 'Category' },
+                                        { field: "TableOwnerName", title: 'Owner' }
+                                    ]],
+                                    data: _data.data,
+                                    done: function () {
+                                        refreshLanguage();
+
+                                        $('tbody [data-field="DataTableName"] .layui-table-cell').css('text-align', 'left');
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+                function getSelectedItems(isGetVal, data) {
+                    var _returnData = {};
+                    if (isGetVal != null && isGetVal != '') {
+                        if (data == null || data == '') {
+                            var chkStatus = tbl.checkStatus('mySearchResultGrid');
+                            _returnData.data = chkStatus.data;
+                        }
+                        else
+                            _returnData.data = [data];
+                    }
+                    else {
+                        _returnData.data = '';
+                    }
+                    if (_preCallFun != null)
+                        _preCallFun(_returnData);
+                    parent.layer.close(index);
+                };
+            });
+        };
+    </script>
+</body>
+</html>
+
+

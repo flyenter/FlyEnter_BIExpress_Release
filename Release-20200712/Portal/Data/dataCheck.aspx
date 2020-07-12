@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="dataCheck.aspx.cs" Inherits="FlyEnter.BISuit.Portal.Data.dataCheck" %>

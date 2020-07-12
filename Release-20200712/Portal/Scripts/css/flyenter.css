@@ -1,0 +1,174 @@
+﻿input[type=text][readonly] {
+    border: 1px solid #DDD;
+    background-color: #fff;
+}
+input[readonly] {
+    border: 1px solid #DDD;
+    background-color: #e4e4e4;
+}
+
+.grpBtnContainer{
+    overflow:hidden;
+}
+.grpBtnContainer .grpBtnTxtitem{
+    display:block;
+    float:left;
+    margin-right:0px;
+}
+.grpBtnContainer .grpBtnIconItem{
+    display:block;
+    float:left;
+    margin-left:1px;
+    /*width:40px;*/
+}
+.feStandardForm{
+    /*background-color: #fff;*/ 
+    background-color:white;
+    padding-top:10px;
+    padding-left:5px;
+    padding-right:10px;
+}
+.feCellLeft{
+    clear:both;
+    text-align:left;
+}
+
+.feBtnBottom{
+    position:absolute;
+    margin:0px !important;
+    padding:0px !important;
+    bottom:5px;
+    width:99%;
+    text-align:center;
+}
+
+.layui-nav-item a{
+    cursor:pointer;
+}
+
+.layui-elem-quote {
+    padding: 5px;
+}
+
+.fly-clear{
+    clear:both;
+    height:2px;
+}
+
+
+.fly-Button {
+    color: #FFF;
+    background-color: transparent;
+    border-color: #EEE;
+    text-decoration: none;
+    text-wrap: none;
+    text-align: center;
+    line-height: 26px;
+    height: 26px;
+    width: 120px;
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+    .fly-Button:hover {
+        background-color: rgb(224, 222, 222);
+        color:red;
+    }
+
+    .fly-Button:active {
+        background-color: rgba(255, 255, 255, 0.7);
+        color: white;
+        padding-top: 1px;
+    }
+    .fly-Button.disable {
+        pointer-events: none;
+        cursor: default;
+        border:0;
+    }
+
+.fly-toolbar-area {
+    background-color: transparent;
+    line-height: 29px;
+    border: 0;
+    float: left;
+    padding-left: 5px;
+    margin: 0;
+    vertical-align: middle;
+}
+   /*fly menu session*/
+    .fly-menu {
+    border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    -webkit-border-radius: 3px 3px 0 0;
+}
+
+.fly-menu-multi-column {
+    display: none;
+    float: left;
+    position: absolute;
+    text-align: left;
+    border-top: none;
+    color: black;
+    background-color: rgb(224, 222, 222);
+    border-radius: 0 5px 5px 5px;
+    width: auto;
+    top:auto;
+    z-index: 120;
+    padding-bottom:5px;
+}
+.fly-menu:hover .fly-menu-multi-column {
+    display: block;
+}
+        .fly-menu-column{
+            list-style:none;
+            display: inline;
+            float: left;
+            position: relative;
+            margin-left: 5px;
+            margin-right: 5px;
+            width: 160px;
+        }
+        .fly-menu-column h3{
+            font-size:13px;
+            font-weight:bold;
+            color:black;
+            font-weight:normal;
+            border-bottom:2px solid #888888;
+            cursor:default;
+            pointer-events:none;
+        }
+        .fly-menu-column li{
+            font-size:12px;
+            color:black;
+            list-style:none;
+            line-height:26px;
+            padding-left:5px;
+            cursor:pointer;
+            text-wrap:none;
+        }
+            .fly-menu-column li:hover {
+                background-color:green;
+                color:white;
+            }
+            .fly-menu-column li:hover a{
+                color:white;
+            }
+
+.flyicon-sharepoint {
+    position:absolute;
+    border-radius:3px;
+    box-shadow:0 0 0 1px #e5e5e5;
+    background-image: url(img/sharepoint.png);
+    width: 10px;
+    height: 10px;
+}

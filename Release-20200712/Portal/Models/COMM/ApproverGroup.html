@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-basic" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="dataTableForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:100px;">
+                    <input class="layui-input" id="keyword" name="keyword" autocomplete="off" placeholder="Key word" data-i18n-placeholder="lbl-key-words">
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-search"></i> <span data-i18n-text="btn-search">Search</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onAdd"><i class="fa fa-plus"></i> <span data-i18n-text="btn-new">Add</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClean"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-warm" data-type="onRemove"><i class="fa fa-trash"></i> <span data-i18n-text="btn-remove">Remove</span></button>
+                </div>
+            </div>
+            <table id="tblApproverGroup" class="layui-hide" lay-filter="tblApproverGroup"></table>
+        </div>
+    </div>
+    <div id="columnTemplate"></div>
+    <script>
+        var urlLogicDelete = '../../Data/svcCommProvider.aspx?method=Set_ApproverGroup_LogicDelete';
+        var _subIndex = -1;
+        var form;
+
+        layui.use(['table', 'form'], function () {
+            var tbl = layui.table;
+            form = layui.form;
+            var $ = layui.$;
+            
+            $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+            tbl.render({
+                elem: '#tblApproverGroup',
+                url: '../../Data/svcCommProvider.aspx?method=Get_ApproverGroupList',
+                page: true,
+                id: 'ApproverGroupGrid',
+                limit: 20,
+                cellMinWidth: 40,
+                height: 'full-60',
+                cols: [[
+                    { type: "checkbox", fixed: 'left' },
+                    { field: "ApproverGroupName", title: "ApproverGroupName", width: 300 },
+                    { field: "GroupType", title: "GroupType" , width: 200},
+                    { field: "IsEnabled", title: "Rdy", templet: '#myIsEnabled', width: 40 },
+                    {},
+                    { field: "operation", fixed: 'right', title: 'Ops', toolbar: '#myRowEdit', width: 110 }
+                ]],
+                done: function () {
+                    refreshLanguage();
+
+                    $('tbody [data-field="ApproverGroupName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="GroupType"] .layui-table-cell').css('text-align', 'left');
+                }
+            });
+
+            /*检测行内按钮*/
+            tbl.on('tool(tblApproverGroup)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'delete') {
+                    var _IDs = [];
+                    _IDs.push({ 'ApproverGroupID': data.ApproverGroupID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    RemoveApproverGroup(_IDs);
+                } else if (obj.event == 'edit') {
+                    EditApproverGrouptem(data.ApproverGroupID);
+                }
+            });
+
+            /*检测列表行双击事件*/
+            tbl.on('rowDouble(tblApproverGroup)', function (obj) {
+                var data = obj.data;
+                EditApproverGrouptem(data.ApproverGroupID);
+            });
+            tbl.on('row(tblApproverGroup)', function (obj) {
+                My_SetSelectedRowStyle(obj);
+            });
+            form.on('select(DataSourceCategory)', function (data) {
+                getSearchResult();
+            });
+
+            var $ = layui.$, active = {
+                onSearch: function () {
+                    getSearchResult();
+                },
+                onAdd: function () {
+                    EditApproverGrouptem('');
+                },
+                onClean: function () {
+                    $('#keyword').val('');
+                    $('#database').val('');
+                    $('#DataSourceCategory').val('');
+                    form.render('select');
+                    getSearchResult();
+                },
+                onRemove: function () {
+                    var checkStatus = tbl.checkStatus('ApproverGroupGrid');
+                    var data = checkStatus.data;
+                    var _IDs = [];
+                    $.each(data, function (index, elem) {
+                        _IDs.push({ 'ApproverGroupID': elem.ApproverGroupID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                    });
+                    RemoveApproverGroup(_IDs);
+                }
+            };
+
+            $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            })
+
+            function EditApproverGrouptem(appGrpID) {
+                layer.open({
+                    type: 2,
+                    area: ['1000px', '570px'],
+                    title: $.i18n.prop('title-approver-group'),
+                    fixed: false,
+                    maxmin: true,
+                    content: 'ApproverGroupItem.html?v=' + My_GetTimeNumberList(),
+                    success: function (layero, index) {
+                        _subIndex = index;
+                        var iframe = window['layui-layer-iframe' + index];
+                        iframe.LoadApproverGroupInfo(appGrpID, function (returnData) {
+                            _subIndex = -1;
+                            if (returnData != null && returnData != '')
+                                getSearchResult();
+                        });
+                    }
+                });
+            }
+            function RemoveApproverGroup(rows) {
+                Shared_Record_Remove($, rows, urlLogicDelete, getSearchResult);
+            }
+            function getSearchResult() {
+                var _key = $('#keyword');
+                tbl.reload('ApproverGroupGrid', {
+                    where: {
+                        keyword: _key.val()
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>

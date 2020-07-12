@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="databaseForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:140px;">
+                    <select id="TaskGroupCategory" lay-filter="TaskGroupCategory"></select>
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-refresh"></i> <span data-i18n-text="btn-refresh">Refresh</span> </button>
+                    <button class="layui-btn layui-btn-primary" data-type="onAdd"><i class="fa fa-plus"></i> <span data-i18n-text="btn-new">New</span></button>
+                    <button class="layui-btn layui-btn-warm" data-type="onRemove"><i class="fa fa-trash"></i> <span data-i18n-text="btn-remove">Remove</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-close">Close</span> </button>
+                </div>
+            </div>
+        </div>
+        <table id="tblUser" class="layui-hide" lay-filter="tblUser"></table>
+    </div>
+    <div id="columnTemplate"></div>
+    <script type="text/html" id="myIsUser">
+        {{#  if(d.IsUser === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myIsPkgOwner">
+        {{#  if(d.IsPkgOwner === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _packageID = '';
+        var _preCallFun = null;
+        var _subIndex = -1;
+        var urlLogicDelete = '../../Data/svcPackageProvider.aspx?method=Set_Package_User_LogicDelete';
+        var form;
+
+        function getPackageUserList(pkgID, callFun) {
+            _preCallFun = callFun;
+            _packageID = pkgID;
+
+            layui.use(['table', 'form'], function () {
+                var tbl = layui.table;
+                form = layui.form;
+                var $ = layui.$;
+
+                $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+                My_Init_Package_TaskGroup_DropList($, form, _packageID, 'TaskGroupCategory');
+
+                tbl.render({
+                    elem: '#tblUser',
+                    url: '../../Data/svcPackageProvider.aspx?method=Get_Package_UserList',
+                    type: 'POST',
+                    where: { PackageID: _packageID },
+                    page: true,
+                    id: 'UserGrid',
+                    cellMinWidth: 40,
+                    limit: 500,
+                    height: 'full-60',
+                    cols: [[
+                        { type: "checkbox", fixed: 'left' },
+                        { field: "EmployeeNo", title: "Employee No", width: 100, },
+                        { field: "EmployeeName", title: "User Name", width: 200 },
+                        { field: "EmployeeStatus", title: "Status", width: 100 },
+                        { field: "EmployeeDepartmentName", title: "Dept" },
+                        { field: "EmployeeDepartmentMgrName", title: "Mgr" },
+                        { field: "IsPkgOwner", title: "Owner", templet: '#myIsPkgOwner', width: 60 },
+                        { field: "IsUser", title: "User", templet: '#myIsUser', width: 40 },
+                        { field: "IsEnabled", title: "Rdy", templet: '#myIsEnabled', width: 40 },
+                        { field: "operation",fixed: 'right', title: 'Ops', toolbar: '#myRowEdit', width: 100 }
+                    ]],
+                    done: function () {
+                        refreshLanguage();
+                    }
+                });
+
+                /*检测行内按钮*/
+                tbl.on('tool(tblUser)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event == 'delete') {
+                        var _IDs = [];
+                        _IDs.push({ 'PackageUserID': data.PackageUserID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                        RemoveUser(_IDs);
+                    } else if (obj.event == 'edit') {
+                        EditUserItem(data.PackageUserID);
+                    }
+                });
+
+                /*检测列表行双击事件*/
+                tbl.on('rowDouble(tblUser)', function (obj) {
+                    var data = obj.data;
+                    EditUserItem(data.PackageUserID);
+                });
+                tbl.on('row(tblUser)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+                form.on('select(TaskGroupCategory)', function (data) {
+                    getSearchResult();
+                });
+                var $ = layui.$, active = {
+                    onSearch: function () {
+                        getSearchResult();
+                    },
+                    onAdd: function () {
+                        EditUserItem('');
+                    },
+                    onRemove: function () {
+                        var checkStatus = tbl.checkStatus('UserGrid');
+                        var data = checkStatus.data;
+                        var _IDs = [];
+                        $.each(data, function (index, elem) {
+                            _IDs.push({ 'PackageUserID': elem.PackageUserID, 'SYS_UpdatedKey': elem.SYS_UpdatedKey });
+                        });
+                        RemoveUser(_IDs);
+                    },
+                    onClose: function () {
+                        parent.layer.close(index);
+                    }
+                };
+
+                $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                })
+                function EditUserItem(uID) {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['700px', '370px'],
+                        title: $.i18n.prop('title-task-user'),
+                        fixed: false,
+                        maxmin: true,
+                        content: 'PackageItem_UserItem.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframe = parent.window['layui-layer-iframe' + index];
+                            iframe.LoadUserInfo(uID, _packageID, function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '')
+                                    getSearchResult();
+                            });
+                        }
+                    });
+                }
+                function RemoveUser(rows) {
+                    Shared_Record_Remove($, rows, urlLogicDelete, getSearchResult);
+                }
+                function getSearchResult() {
+                    var _ds = $('#TaskGroupCategory');
+                    tbl.reload('UserGrid', {
+                        page: { curr: 1 },
+                        where: {
+                            PackageID: _packageID,
+                            TaskGroupCategory: _ds.val()
+                        }
+                    });
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
+

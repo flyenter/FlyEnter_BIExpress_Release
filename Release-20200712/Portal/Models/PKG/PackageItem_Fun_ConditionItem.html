@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-package" />
+    <script src="../../Scripts/boot.js"></script>
+    <script src="../../Scripts/my/shareConstDefinition.js"></script>
+    <script src="../../Scripts/my/arrDefined.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form layui-form-pane" style="overflow:visible !important;" action="" lay-filter="ConditionItemForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="GroupOrItemName" data-i18n-text='fld-GroupOrItemName'>Group/Item Name</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="GroupOrItemName" name="GroupOrItemName" lay-verify="required" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="GroupLogicType" data-i18n-text="fld-GroupLogicType">Group Logic</label>
+                    <div class="layui-input-inline">
+                        <select id="GroupLogicType" name="GroupLogicType" lay-filter="GroupLogicType"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="IsEnabled"></label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Available" data-i18n-title="lbl-IsEnabled">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="SrcParamID" data-i18n-text="fld-SrcParamID">Conditiaonl Param</label>
+                    <div class="layui-input-inline">
+                        <select id="SrcParamID" name="SrcParamID" lay-filter="SrcParamID"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ValueCompreType" data-i18n-text="fld-ValueCompreType">Compare</label>
+                    <div class="layui-input-inline">
+                        <select id="ValueCompreType" name="ValueCompreType" lay-filter="ValueCompreType"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="TargetValue" data-i18n-text="fld-TargetValue">Target Value</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="TargetValue" name="TargetValue" autocomplete="off">
+                    </div>
+                    <label class="layui-form-label" for="TargetValue" style="width:320px;text-align:left;" data-i18n-text="lbl-condition-target-value">The customized parameter won't be supported.</label>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="SortIndex" data-i18n-text="fld-SortIndex">Sort</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" id="SortIndex" name="SortIndex" autocomplete="off" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="ConditionItemID" name="ConditionItemID" style="display:none;" />
+                    <input id="ConditionSetID" name="ConditionSetID" style="display:none;" />
+                    <input id="PackageID" name="PackageID" style="display:none;" />
+                    <input id="TaskID" name="TaskID" style="display:none;" />
+                    <input id="ConditionCategory" name="ConditionCategory" style="display:none;" />
+                    <input id="ParentConditionItemID" name="ParentConditionItemID" style="display:none;" />
+                    <input id="IsConditionGroup" name="IsConditionGroup" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        const curFraIndex = parent.layer.getFrameIndex(window.name);
+        var _preCallbackFun = null;
+        var _subIndex = -1;
+        var form;
+
+        function LoadConditionItem(conditionItemID, pareConditionItemID, conditionItemType, conditionSetID, packageID,taskID,itemCategory, callFun) {
+            _preCallbackFun = callFun;
+
+            layui.use(['form'], function () {
+                form = layui.form;
+                var $ = layui.$;
+
+                $('#ConditionSetID').val(conditionSetID);
+                $('#PackageID').val(packageID);
+                $('#TaskID').val(taskID);
+                $('#ConditionCategory').val(itemCategory);
+
+                if (conditionItemID != '') {
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Get_Package_Task_ConditionItem',
+                        type: 'POST',
+                        data: { ConditionItemID: conditionItemID },
+                        async: false,
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    if (_data.data.IsConditionGroup == 1)
+                                        My_Init_LogicType($, form, 'GroupLogicType', false);
+                                    else {
+                                        My_Init_ValueCompareTypeList($, form, 'ValueCompreType', false);
+                                        My_Init_Package_ParameterList($, form, 'SrcParamID', packageID, false);
+                                    }
+                                    form.val('ConditionItemForm', _data.data);
+                                }
+                                else {
+                                    alert('Invalid ID');
+                                }
+                            }
+                            else
+                                layer.alert("Invalid Service Call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                }
+                else {
+                    $('#ParentConditionItemID').val(pareConditionItemID);
+                    if (conditionItemType.indexOf('group') > -1) {
+                        $('#IsConditionGroup').val(1);
+                        My_Init_LogicType($, form, 'GroupLogicType', false);
+                        if (conditionItemType == 'groupAnd')
+                            $('#GroupLogicType').val('AND');
+                        else
+                            $('#GroupLogicType').val('OR');
+                        form.render('select');
+                    }
+                    else {
+                        $('#IsConditionGroup').val(0);
+                        My_Init_ValueCompareTypeList($, form, 'ValueCompreType', false);
+                        My_Init_Package_ParameterList($, form, 'SrcParamID', packageID, false);
+                    }
+                    My_CheckBox_SetVal($, 'IsEnabled', 1);
+                    form.render('checkbox');
+                }
+
+                if ($('#IsConditionGroup').val() == '1') {
+                    My_Disable_Object($, 'SrcParamID');
+                    My_Disable_Object($, 'ValueCompreType');
+                    My_Disable_Object($, 'TargetValue');
+                }
+                else {
+                    My_Disable_Object($, 'GroupLogicType');
+                }
+
+                form.on('submit(submitData)', function (data) {
+                    My_VerifyCheckBox($, [{ id: 'IsEnabled' }], data.field);
+                    var _data = JSON.stringify(data.field);
+                    $.ajax({
+                        url: '../../Data/svcPackageProvider.aspx?method=Set_Package_Task_ConditionItem_Update',
+                        type: 'POST',
+                        data: { ConditionItem: _data },
+                        async: false,
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                _preCallbackFun(item);
+                                parent.layer.close(curFraIndex);
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+
+                $('#btnClose').click(function () {
+                    parent.layer.close(curFraIndex);
+                });
+            });
+        };
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+

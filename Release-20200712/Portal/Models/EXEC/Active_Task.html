@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-execution" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <div id="databaseForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:140px;">
+                    <select id="TaskStatusCategory" lay-filter="TaskStatusCategory"></select>
+                </div>
+                <div class="layui-inline" style="width:100px;">
+                    <input class="layui-input" id="keyword" name="keyword" autocomplete="off" placeholder="Key words" data-i18n-placeholder="lbl-key-words">
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onSearch"><i class="fa fa-search"></i> <span data-i18n-text="btn-search">Search</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClean"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                </div>
+                <div class="layui-inline" style="width:130px;">
+                    <input type="checkbox" name="IsAutoRefresh" id="IsAutoRefresh" lay-filter="IsAutoRefresh" value="1" lay-skin="primary" title="Auto Refresh" data-i18n-title="fld-IsAutoRefresh">
+                </div>
+            </div>
+            <table id="tblActiveTask" class="layui-hide" lay-filter="tblActiveTask"></table>
+        </div>
+    </div>
+
+    <script type="text/html" id="myOwner">
+        <i class="fa fa-skype"></i>
+        <a href="sip:'{{d.ScheduleOwnerEmail||''}}'"><span>{{d.ScheduleOwnerName||''}}</span></a>
+    </script>
+    <script type="text/html" id="myCaseStatus">
+        {{#  if(d.CaseStatus === 'Failed' || d.CaseStatus === 'Rejected'|| d.CaseStatus === 'ValidationFailed'){ }}
+        <i class="fa fa-circle fa-1x" style="color:red;"></i>
+        {{# } else if(d.CaseStatus === 'Pending' || d.CaseStatus=='Cancelling' || d.CaseStatus=='Cancelled'){ }}
+        <i class="fa fa-circle fa-1x" style="color:#f5ca51;"></i>
+        {{# } else if(d.CaseStatus === 'Completed' || d.CaseStatus === 'Cancelled'){ }}
+        <i class="fa fa-circle fa-1x" style="color:dimgray;"></i>
+        {{# } else if(d.CaseStatus == 'Processing' || d.CaseStatus =='NotStart' || d.CaseStatus =='Ready') { }}
+        <i class="fa fa-circle fa-1x" style="color:forestgreen;"></i>
+        {{# } else { }}
+        <i class="fa fa-circle fa-1x" style="color:white;"></i>
+        {{#  } }}
+        <span title="{{ d.ResultDescription }}">{{ d.CaseStatus !=null ? d.CaseStatus:'' }}</span>
+    </script>
+    <script type="text/html" id="myWorkingDB">
+        {{#  if(d.WkrDatabaseName !='' && d.WkrDatabaseName !=null){ }}
+        <span>{{'[' + d.WkrDataSourceName + '].[' + d.WkrDatabaseName + ']'}}</span>
+        {{# } else { }}
+        <span></span>
+        {{#  } }}
+        <span title="{{ d.ResultDescription }}">{{ d.CaseStatus !=null ? d.CaseStatus:'' }}</span>
+    </script>
+    <script type="text/html" id="myRowEdit">
+        <div class="layui-btn-group layui-inline">
+            <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="delete"><span data-i18n-text="btn-remove"></span></a>
+        </div>
+    </script>
+    <div id="columnTemplate"></div>
+    <script>
+        function GetSpecialDataType(d, field, format) {
+            if (d != null && d != '' && d[field] != null)
+                switch (format) {
+                    case 'MD':
+                        return (new Date(d[field])).Format('MM-dd');
+                    case 'MDHM':
+                        return (new Date(d[field])).Format('MM-dd hh:mm');
+                    case 'HM':
+                        return (new Date(d[field])).Format('hh:mm');
+                    default:
+                        return d[field];
+                        break;
+                }
+            else
+                return '';
+        };
+    </script>
+    <script>
+        var _subIndex = -1;
+        var form;
+
+        layui.use(['table', 'form', 'element'], function () {
+            var tbl = layui.table;
+            form = layui.form;
+            var element = layui.element;
+            var $ = layui.$;
+
+            $('#columnTemplate').load('../../Scripts/myTemplate/dataColumnTemplate.html?v=' + My_GetTimeNumberList());
+
+            var _timeKey = My_GetTimeNumberList();
+            var url_ExecCaseLogicDelete = '../../Data/svcPackageProvider.aspx?method=Set_ExecutionCase_LogicDelete';
+
+            My_Init_TaskStatusCategory($, form, 'TaskStatusCategory', true);
+
+            tbl.render({
+                elem: '#tblActiveTask',
+                url: '../../Data/svcPackageProvider.aspx?method=Get_Activity_ExecCaseList',
+                page: false,
+                id: 'ActiveTaskGrid',
+                limit: 20,
+                cellMinWidth: 40,
+                height: 'full-60',
+                cols: [[
+                    { type: "numbers", fixed: 'left' },
+                    { field: 'PackageNo', title: 'No', width: 80 },
+                    { field: "PackageName", title: "Package Name", width: 220 },
+                    { field: 'TaskGroupName', title: 'Task Group', width: 100 },
+                    { field: 'ScheduleName', title: 'Schedule', width: 100 },
+                    { field: 'CaseStatus', title: 'Status', width: 120, toolbar: '#myCaseStatus' },
+                    { field: 'CreatedDate', title: 'Start Time', width: 90, templet: function (d) { return GetSpecialDataType(d, 'CreatedDate', 'MDHM'); } },
+                    { field: 'LastUpdateTime', title: 'LstUpdate', width: 80, templet: function (d) { return GetSpecialDataType(d, 'LastUpdateTime', 'HM'); } },
+                    { field: "ScheduleOwnerName", title: "Owner", width: 120, toolbar: '#myOwner' },
+                    { field: 'WkrDatabaseName', title: 'Working Database', templet: '#myWorkingDB' },
+                    { field: 'operation', fixed: 'right', title: 'Ops', toolbar: '#myRowEdit', width: 80 }
+                ]],
+                done: function () {
+                    refreshLanguage();
+
+                    $('tbody [data-field="PackageName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="WkrDatabaseName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="CaseStatus"] .layui-table-cell').css('text-align', 'left');
+                }
+            });
+
+            /*检测行内按钮*/
+            tbl.on('tool(tblActiveTask)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'delete') {
+                    var _IDs = [];
+                    _IDs.push({ 'ExecCaseID': data.ExecCaseID, 'SYS_UpdatedKey': data.SYS_UpdatedKey });
+                    RemoveExecutionTask(_IDs);
+                } else if (obj.event == 'rerun') {
+                    EditExecutionTaskItem(data.ExecCaseID, data.PackageName, data.StartDateTime);
+                }
+            });
+            tbl.on('row(tblActiveTask)', function (obj) {
+                My_SetSelectedRowStyle(obj);
+            });
+            /*检测列表行双击事件*/
+            tbl.on('rowDouble(tblActiveTask)', function (obj) {
+                var data = obj.data;
+                EditExecutionTaskItem(data.ExecCaseID, data.PackageName, data.StartDateTime);
+            });
+
+            form.on('select(TaskStatusCategory)', function (data) {
+                getSearchResult();
+            });
+            form.on('checkbox(IsAutoRefresh)', function (data) {
+                if (data.elem.checked) {
+                    refreshPage = window.setInterval(function () { getSearchResult(); }, 5000);
+                }
+                else {
+                    window.clearInterval(refreshPage);
+                }
+            });
+            var $ = layui.$, active = {
+                onSearch: function () {
+                    getSearchResult();
+                },
+                onClean: function () {
+                    $('#keyword').val('');
+                    $('#PackageCategory').val('');
+                    form.render('select');
+                    getSearchResult();
+                }
+            };
+
+            $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            })
+
+            function EditExecutionTaskItem(execCaseID, packageName, startDT) {
+                var url = 'models/EXEC/Active_TaskItem.html?ExecCaseID=' + execCaseID + '&v=' + _timeKey;
+                var pkgName = packageName;      //+ (new Date(startDT)).Format('_MM_dd_hh_mm');
+                if (top.layui.index) {
+                    top.layui.index.openTabsPage(url, pkgName);
+                } else {
+                    window.open(url)
+                }
+            }
+            function RemoveExecutionTask(rows) {
+                Shared_Record_Remove($, rows, url_ExecCaseLogicDelete, getSearchResult);
+            }
+            function getSearchResult() {
+                var _key = $('#keyword');
+                var _ts = $('#TaskStatusCategory');
+                tbl.reload('ActiveTaskGrid', {
+                    where: {
+                        TaskStatusCategory: _ts.val(),
+                        keyword: _key.val()
+                    },
+                    done: function () {
+                        refreshLanguage();
+                        
+                    $('tbody [data-field="PackageName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="WkrDatabaseName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="CaseStatus"] .layui-table-cell').css('text-align', 'left');
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
+

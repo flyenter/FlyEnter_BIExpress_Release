@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-shareSearch" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div style=" background-color: #fff; padding-top:5px; padding-left:5px;padding-right:5px;">
+        <div id="employeeSearchForm" class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width: 470px;">
+                    <label class="layui-form-label" for="DatabaseName" data-i18n-text="fld-DatabaseName">Database</label>
+                    <div class="grpBtnContainer">
+                        <div class="layui-input-inline grpBtnTxtitem" style="width:330px;">
+                            <input class="layui-input" id="DatabaseName" name="DatabaseName" lay-verify="required" autocomplete="off" readonly="readonly">
+                        </div>
+                        <div class="grpBtnIconItem">
+                            <a id="grpDataBase" class="layui-btn layui-btn-primary"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" id="onExport" title="Parse the query schema"><i class="fa fa-cog"></i></button>
+                    <button class="layui-btn layui-btn-primary" id="onConfirm" title="Choose the selected field list"><i class="fa fa-check"></i></button>
+                    <button class="layui-btn layui-btn-warm" id="onClose" title="Cancel"><i class="fa fa-close"></i></button>
+                    <input id="DatabaseID" name="DatabaseID" style="visibility:hidden" />
+                </div>
+            </div>
+            <div class="layui-tab layui-tab-brief" lay-filter="queryStructureTabs" style="margin-top:0px;height:300px;">
+                <ul class="layui-tab-title">
+                    <li lay-id="script" class="layui-this"><span data-i18n-text="tab-query-script">Query Script</span></li>
+                    <li lay-id="fieldlist"><span data-i18n-text='tab-query-field-list'>Field List</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item">
+                        <blockquote class="layui-elem-quote">
+                            <span data-i18n-html="lbl-pick-up-query-script-msg">The data type can't be pickup from Oracle and MySQL</span>
+                        </blockquote>
+                        <label class="layui-form-label" for="ScriptContent">Script</label>
+                        <div style="margin-left: 80px; margin-right: 20px;">
+                            <textarea id="ScriptContent" name="ScriptContent" class="layui-textarea" style="height:360px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <table id="tblFieldList" class="layui-hide" lay-filter="tblFieldList"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/html" id="colIsEnabled">
+        {{#  if(d.IsEnabled === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="colISNULLABLE">
+        {{#  if(d.IsNullable === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="colISINCREMENTCOLUMN">
+        {{#  if(d.IsIncrease === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="colISKEY">
+        {{#  if(d.IsPrimaryKey === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="colIsMAX">
+        {{#  if(d.IsLong === 1){ }}
+        <i class="fa fa-check"></i>
+        {{#  } }}
+    </script>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _sharedReturnData = {};
+        var _sourceType = '';
+        var _preCallFun = null;
+        var _subIndex = -1;
+        var form;
+
+        function SetPreValue(sourceType, callFun) {
+            _preCallFun = callFun;
+            _sourceType = sourceType;
+        };
+        function setSharedReturnInfo(info) {
+            _sharedReturnData = info;
+        }
+
+        layui.use(['table', 'form', 'element'], function () {
+            var tbl = layui.table;
+            form = layui.form;
+            var elm = layui.element;
+            var $ = layui.$;
+            var _dbID = $('#DatabaseID').val();
+            var _sch = $('#DataTableSchema').val();
+            var _tbl = $('#DataTableName').val();
+
+            tbl.render({
+                elem: '#tblFieldList',
+                page: false,
+                limit: 500,
+                id: 'DataTableFieldGrid',
+                cellMinWidth: 40,
+                height: 'full-120',
+                cols: [[
+                    { type: "checkbox"},
+                    { field: 'FieldName', title: 'Field', width: 180},
+                    { field: 'FieldDBType', title: 'Data Type', width: 160 },
+                    { field: 'FieldLength', title: 'Length', width: 80 },
+                    { field: 'FieldScale', title: 'Scale', width: 50 },
+                    { field: 'IsEnabled', title: 'Rdy', width: 40, templet: '#colIsEnabled' },
+                    { field: 'IsNullable', title: 'Null', width: 40, templet: '#colISNULLABLE' },
+                    { field: 'IsPrimaryKey', title: 'Key', width: 40, templet: '#colISKEY' },
+                    { field: 'IsIncrease', title: 'Inc', width: 40, templet: '#colISINCREMENTCOLUMN' },
+                    { field: 'IsLong', title: 'Max', width: 40, templet: '#colIsMAX' },
+                    { field: 'BizDesc', title: 'Desc' }
+                ]],
+                data: [],
+                done: function () {
+                    refreshLanguage();
+
+                    $('tbody [data-field="FieldName"] .layui-table-cell').css('text-align', 'left');
+                    $('tbody [data-field="FieldDBType"] .layui-table-cell').css('text-align', 'left');
+
+                }
+            });
+
+            elm.tabChange('queryStructureTabs', 'script');
+
+            $('#onExport').click(function () {
+                synchronizeStructure();
+            });
+            $('#onConfirm').click(function () {
+                getSelectedItems('yes', '');
+            });
+            $('#onClose').click(function () {
+                parent.layer.close(index);
+            });
+            function synchronizeStructure() {
+                var _dbID = $('#DatabaseID').val();
+                var _sql = $('#ScriptContent').val();
+                if (_dbID == null || _dbID == '') {
+                    layer.alert('Please choose the database first.');
+                }
+                else if (_sql == null || _sql == '') {
+                    layer.alert($.i18n.prop('msg-no-data-query-script'));
+                }
+                else {
+
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_TableStructure_ByQuery',
+                        data: { ScriptContent: _sql, DatabaseID: _dbID },
+                        type: "POST",
+                        cache: false,
+                        success: function (data) {
+                            var _data = JSON.parse(data);
+                            if (_data != null && _data != '') {
+                                tbl.reload('DataTableFieldGrid', {
+                                    page: { curr: 1 },
+                                    data: _data.data
+                                });
+                                elm.tabChange('queryStructureTabs', 'fieldlist');
+
+                                if (_data.msg != '')
+                                    layer.alert(_data.msg);
+                                else if (_data.data.length == 0)
+                                    layer.msg('no data');
+                            }
+                        }
+                    });
+                };
+            }
+
+            function getSelectedItems() {
+                var chkStatus = tbl.checkStatus('DataTableFieldGrid');
+                if (chkStatus.data.length == 0)
+                    layer.alert("No fields choosed");
+                else {
+                    var _returnData = { sourceType: _sourceType, data: chkStatus.data };
+                    if (_preCallFun != null)
+                        _preCallFun(_returnData);
+                    parent.layer.close(index);
+                }
+            };
+
+            $('#grpDataBase').click(function () {
+                parent.layer.open({
+                    type: 2,
+                    area: ['900px', '570px'],
+                    title: 'Database Infor Query',
+                    fixed: false,
+                    maxmin: true,
+                    layerMode: true,
+                    content: '../share/shareDatabaseSearch.html?v='+My_GetTimeNumberList(),
+                    zIndex: layer.zIndex,
+                    success: function (layero, index) {
+                        var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                        iframeWin.SetPreValue(GetDataSourceCategory(), '', function (returnData) {
+                            if (returnData != null && returnData != '') {
+                                if (returnData.data.length > 0) {
+                                    $('#DatabaseName').val('[' + returnData.data[0].DSName + ']-[' + returnData.data[0].DatabaseName + ']');
+                                    $('#DatabaseID').val(returnData.data[0].DatabaseID);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            function GetDataSourceCategory() {
+                return ['MSSQLServer', 'Oracle', 'MySQL', 'PostgreSQL', 'Vertica'];
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
+
+
+

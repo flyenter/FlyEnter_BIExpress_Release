@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-basic" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="acForm">
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width:100%;" >
+                    <div class="layui-input-inline" style="width:100%;">
+                        <input class="layui-input" id="MessageTitle" name="MessageTitle" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline"style="width:100%;">
+                    <div class="layui-input-inline" style="width:100%;height:400px;">
+                        <input class="layui-input" id="MessageBody" name="MessageBody" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="AnnounceID" name="AnnounceID" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        var _acID = '';
+        var _preCall = null;
+        var form;
+        var _subIndex = -1;
+
+        function LoadAnnouncementInfo(acID,preCall) {
+            _acID = acID;
+            _preCall = preCall;
+
+            layui.use(['form', 'layedit'], function () {
+                form = layui.form;
+                var layedit = layui.layedit;
+                var $ = layui.$;
+                layedit.set({
+                    tool: ['']
+                    , hideTool: ['strong', 'italic', 'underline', 'del', 'addhr', '|', 'fontFomatt', 'colorpicker', 'face','image', '|', 'left', 'center', 'right', '|', 'link', 'unlink', 'image_alt', 'video', 'anchors']
+                , height: '90%'
+                });
+                var ieditor = layedit.build('MessageBody', {
+                    height: 380
+                });
+
+                if (acID != '') {
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_Announcement_Item',
+                        type: 'POST',
+                        data: { AnnounceID: acID },
+                        async: false,
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    form.val('acForm', _data.data);
+                                    layedit.setContent(ieditor, _data.data.MessageBody);
+                                }
+                                else {
+                                    alert('Invalid Accouncement ID');
+                                }
+                            }
+                            else
+                                layer.alert("Invalid Service Call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Set_AnnouncementChecked',
+                        type: 'POST',
+                        async:false,
+                        data: { AnnounceID: acID }
+                    });
+                }
+                $('#btnClose').click(function () {
+                    _preCall();
+                    parent.layer.close(index);
+                });
+            });
+        };
+    </script>
+</body>
+</html>
+
+
+
+

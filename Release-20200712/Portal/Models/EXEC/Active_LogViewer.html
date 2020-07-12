@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-execution" />
+    <script src="../../Scripts/boot.js"></script>
+    <script src="../../Scripts/my/shareConstDefinition.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="PackageItemForm">
+            <div class="layui-form-item">
+                <div class="layui-btn-group layui-inline">
+                    <button class="layui-btn layui-btn-primary" data-type="onRefresh"><i class="fa fa-refresh"></i> <span data-i18n-text="btn-refresh">Refresh</span></button>
+                    <button class="layui-btn layui-btn-primary" data-type="onClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-close">Close</span></button>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ExecCaseID" style="width:100px;" data-i18n-text="fld-ExecCaseID">ExecCaseID:</label>
+                    <div class="layui-input-inline" style="width:285px;">
+                        <input class="layui-input" id="ExecCaseID" name="ExecCaseID" autocomplete="off" placeholder="ExecCaseID" readonly="readonly">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" for="ExecTaskID" style="width:100px;" data-i18n-text="fld-ExecTaskID">ExecTaskID:</label>
+                    <div class="layui-input-inline" style="width:285px;">
+                        <input class="layui-input" id="ExecTaskID" name="ExecTaskID" autocomplete="off" placeholder="ExecTaskID" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab layui-tab-brief" lay-filter="TaskItemTabs" style="margin-top: 0px; height: 400px;">
+                <ul class="layui-tab-title">
+                    <li lay-id="svcLog" class="layui-this"><span data-i18n-text="tab-service-log">Service Operation Log</span></li>
+                    <li lay-id="logDetail"><span data-i18n-text="tab-log-detail">Detail Info</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <table id="tblSvcOpsLog" class="layui-hide" lay-filter="tblSvcOpsLog"></table>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="TaskID" data-i18n-text="fld-TaskID">Task ID</label>
+                                <div class="layui-input-inline" style="width:300px;">
+                                    <input class="layui-input" id="TaskID" name="TaskID" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:12px;">
+                                <input type="checkbox" name="IsAuditNeed" id="IsAuditNeed" value="1" lay-skin="primary" title="Audit">
+                                <input type="checkbox" name="IsProd" id="IsProd" value="1" lay-skin="primary" title="Prd" checked="">
+                                <input type="checkbox" name="IsDev" id="IsDev" value="1" lay-skin="primary" title="Dev" checked="">
+                                <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Available" checked="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script type="text/html" id="myTaskStatus">
+        {{#  if(d.TaskStatus === 'Failed' || d.TaskStatus === 'Rejected'|| d.TaskStatus === 'ValidationFailed'){ }}
+        <i class="fa fa-circle fa-1x" style="color:red;" title="{{d.TaskStatus }}"></i>
+        {{# } else if(d.TaskStatus === 'Pending' || d.TaskStatus=='Cancelling' || d.TaskStatus=='Warning' || d.TaskStatus === 'Cancelled'){ }}
+        <i class="fa fa-circle fa-1x" style="color:#efbe33;" title="{{d.TaskStatus }}"></i>
+        {{# } else if(d.TaskStatus === 'Ignore'){ }}
+        <i class="fa fa-circle fa-1x" style="color:#FF9800;"></i>
+        {{# } else if(d.TaskStatus === 'Completed'){ }}
+        <i class="fa fa-circle fa-1x" style="color:dimgray;" title="{{d.TaskStatus }}"></i>
+        {{# } else if(d.TaskStatus == 'Processing' || d.TaskStatus =='NotStart' || d.TaskStatus =='Ready') { }}
+        <i class="fa fa-circle fa-1x" style="color:green;" title="{{d.TaskStatus }}"></i>
+        {{# } else { }}
+        <i class="fa fa-circle fa-1x" style="color:white;" title="{{d.TaskStatus }}"></i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myDataVersion">
+        {{#  if(d.DataVersion >-1){ }} 
+        {{d.DataVersion}}
+        {{#  } }}
+    </script>
+    <script type="text/html" id="mySvcCategory">
+        {{#  if(d.ServiceCategory === 'ScheduleService'){ }}
+        <i class="fa fa-cogs fa-1x" title="{{d.ServiceCategory }}"></i>
+        {{# } else { }}
+        <i class="fa fa-cog fa-1x" title="{{ d.ServiceCategory }}"></i>
+        {{#  } }}
+    </script>
+    <script>
+        var indexD = parent.layer.getFrameIndex(window.name);
+        var form;
+        var _subIndex = -1;
+
+        function LoadServiceOperationLog(execCaseID, execTaskID) {
+            layui.use(['table', 'form', 'element'], function () {
+                var tbl = layui.table;
+                var element = layui.element;
+                var $ = layui.$;
+                form = layui.form;
+
+                $('#ExecCaseID').val(execCaseID);
+                $('#ExecTaskID').val(execTaskID);
+
+                var localTable = tbl.render({
+                    elem: '#tblSvcOpsLog',
+                    url: '../../Data/svcPackageProvider.aspx?method=Get_ExecServiceOperationLog',
+                    page: true,
+                    id: 'SvcLogGrid',
+                    limit: 100,
+                    cellMinWidth: 40,
+                    height: 'full-110',
+                    cols: [[
+                        { type: "numbers" },
+                        { field: "TaskStatus", templet: '#myTaskStatus', width: 40 },
+                        { field: 'ServiceCategory', templet: '#mySvcCategory', width: 40 },
+                        { field: "TaskCategory", title: "Task Category", width: 130 },
+                        { field: "ResultDescription", title: "Result Desc", width: 250 },
+                        { field: "DataVersion", title: 'Ver', templet: '#myDataVersion', width: 40 },
+                        { field: "ImpactedRecords", title: "Records", width: 100 },
+                        { field: 'ActionData', title: 'Action Data', width: 160 },
+                        { field: "OpearationDateTime", title: "OpearationDateTime", width: 140 },
+                        { field: "HostServerName", title: "Host Server", width: 120 },
+                        { field: "DLLCalssName", title: "Calss Name", width: 220 },
+                        { field: "DLLCallMethodName", title: "Method Name", width: 260 }
+                    ]],
+                    done: function (res, curr, count) {
+                        refreshLanguage();
+
+                        $('tbody [data-field="TaskCategory"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="ResultDescription"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="Action"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="ActionData"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="HostServerIP"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="DLLCalssName"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="DLLCallMethodName"] .layui-table-cell').css('text-align', 'left');
+                    },
+                    where: {
+                        ExecCaseID: execCaseID,
+                        ExecTaskID: execTaskID
+                    }
+                });
+                var active = {
+                    onRefresh: function () {
+                        RefreshLog();
+                    },
+                    onClose: function () {
+                        parent.layer.close(indexD);
+                    }
+                };
+
+                $('.layui-form .layui-form-item .layui-btn-group .layui-btn').on('click', function () {
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                })
+                tbl.on('row(tblSvcOpsLog)', function (obj) {
+                    My_SetSelectedRowStyle(obj);
+                });
+
+                function RefreshLog() {
+                    var _execCaseID = $('#ExecCaseID').val();
+                    var _execTaskID = $('#ExecTaskID').val();
+                    tbl.reload('SvcLogGrid', {
+                        where: {
+                            ExecCaseID: _execCaseID,
+                            ExecTaskID: _execTaskID
+                        }
+                    });
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
+
+
+
+

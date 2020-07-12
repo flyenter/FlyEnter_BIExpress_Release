@@ -1,0 +1,326 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-security" />
+    <script src="../../Scripts/boot.js"></script>
+    <style type="text/css">
+        .layui-table-body .layui-table-cell {
+            text-align: left !important;
+        }
+
+        .layui-table-cell .layui-form-checkbox[lay-skin=primary] {
+            padding: 0 25px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form layui-form-pane" action="" lay-filter="roleItemForm">
+            <div class="layui-tab layui-tab-brief" lay-filter="dataTableItemTabs" style="margin-top:0px;">
+                <ul class="layui-tab-title">
+                    <li class="layui-this"><span data-i18n-text='tab-basic'>Basic Info</span></li>
+                    <li><span data-i18n-text="tab-Fun-list">Function List</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="RoleTitle" data-i18n-text="fld-RoleTitle">Role Name</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="RoleTitle" name="RoleTitle" lay-verify="required" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="SecurityLevel" data-i18n-text="fld-SecurityLevel">Sec Level</label>
+                                <div class="layui-input-inline">
+                                    <select id="SecurityLevel" name="SecurityLevel">
+                                        <option value="0">Normal</option>
+                                        <option value="1">SysAdmin</option>
+                                        <option value="2">DataAdmin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Is Enabled" data-i18n-title="lbl-IsEnabled">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="BusinessUserGroup" data-i18n-text="fld-BusinessUserGroup">Biz User Group</label>
+                                <div class="layui-input-inline">
+                                    <select id="BusinessUserGroup" name="BusinessUserGroup">
+                                        <option value="">Please Select</option>
+                                        <option value="APAC Supply Chain">APAC Supply Chain</option>
+                                        <option value="Source Supply Chain">Source Supply Chain</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="RoleDesc" data-i18n-text="fld-RoleDesc">Description</label>
+                                <div class="layui-input-inline" style="width:600px;">
+                                        <textarea id="RoleDesc" name="RoleDesc" class="layui-textarea" style="height:100px;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item"  lay-filter="myTreetable">
+                        <table id="tblSysFunction" class="layui-tab layui-form layui-hide" lay-filter="tblSysFunction" ></table>
+                      </div>
+                </div>
+            </div>
+                <div class="layui-form-item feBtnBottom">
+                    <div class="layui-inline">
+                        <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                        <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                        <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+
+                        <input id="RoleID" name="RoleID" style="display:none;" />
+                        <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                    </div>
+                </div>
+        </form>
+    </div>
+    <script type="text/html" id="myIcon">
+        {{#  if(d.IconKey !=''){ }}
+        <div style="text-align:center"><i class='fa  {{ d.IconKey}} '></i></div>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="myOprItems">
+        {{# var vdate = JSON.parse(d.FunOprSet);}}
+        {{# layui.each(vdate,function(index,item){ }}
+        <input type="checkbox" value="{{item.OprID}}" title="{{item.OprTitle}}" lay-skin="primary" name="innerOprKey" />
+        {{# });}}
+    </script>
+    <script type="text/html" id="myForm">
+        {{#  if(d.MenuType =='0'){ }}
+        <div style="text-align:center"><i class='layui-icon layui-icon-app '></i></div>
+        {{#  } }}
+    </script>
+    <script>
+        var _curWinIndex = parent.layer.getFrameIndex(window.name);
+        var _deletedFieldList = [];
+        var _subIndex = -1;
+        var form;
+        var _roleID = '';
+        var _preCallFun = null;
+        var defFunID = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+
+        function LoadRoleInfo(roleID, callFun) {
+            _roleID = roleID;
+            _preCallFun = callFun;
+
+            layui.config({
+                base: '../../Scripts/layuiadmin/lib/Extend/'
+            }).extend({
+                treetable: 'treetable-lay/treetable'
+            }).use(['form', 'element', 'treetable','table'], function () {
+                form = layui.form;
+                var $ = layui.$;
+                var treetable = layui.treetable;
+                var table = layui.table;
+                if (_roleID != null && _roleID != '') {
+                    $.ajax({
+                        url: '../../Data/svcSecurityProvider.aspx?method=Get_Role_Item',
+                        type: 'POST',
+                        data: { RoleID: _roleID },
+                        async: false,
+                        cache: false,
+                        success: function (data) {
+                            var _data = JSON.parse(data);
+                            if (_data != null) {
+                                form.val('roleItemForm', _data.data);
+                                treetable.render({
+                                    elem: '#tblSysFunction',
+                                    id: 'tblSysFunction',
+                                    url: '../../Data/svcSecurityProvider.aspx?method=Get_SysFunctionList',
+                                    icon_key: 'FunTitle',
+                                    is_checkbox: true,
+                                    treeIdName: 'FunID',
+                                    treePidName: 'ParentFunID',
+                                    treeSpid: defFunID,
+                                    treeColIndex: 1,
+                                    height: 'full-125',
+                                    cols: [[
+                                        { type: 'checkbox' },
+                                        { field: 'FunTitle', title: 'Menu', width: '220' },
+                                        { field: 'IconKey', title: 'Icon', width: '45', templet: '#myIcon' },
+                                        { field: 'FunOprSet', title: 'Feature', width: '600', templet: '#myOprItems' }
+                                    ]],
+                                    done: function (res, curr, count) {
+                                        refreshLanguage();
+                                        $.ajax({
+                                            url: '../../Data/svcSecurityProvider.aspx?method=Get_Role_FunIDs',
+                                            type: 'GET',
+                                            data: { RoleID: _roleID },
+                                            async: false,
+                                            cache: false,
+                                            success: function (data) {
+                                                if (data != null && data != '') {
+                                                    var fk = JSON.parse(data);
+                                                    for (var i = 0; i < res.data.length; i++) {
+                                                        for (var j = 0; j < fk.length; j++) {
+                                                            if (res.data[i].FunID == fk[j].FunID) {
+                                                                res.data[i].LAY_CHECKED = true;
+                                                                var iIndex = res.data[i]['LAY_TABLE_INDEX'];
+                                                                var checkbox = $('#tblSysFunction').next().find('tr[data-index=' + iIndex + '] input[type="checkbox"]');
+                                                                for (var subI = 0; subI < checkbox.length; subI++) {
+                                                                    if (subI == 0 || fk[j].OprIDs != null && fk[j].OprIDs.indexOf(checkbox[subI].value) > -1) {
+                                                                        $(checkbox[subI]).prop('checked', true).next().addClass('layui-form-checked');
+                                                                    }
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            else {
+                                alert("Invalid Role ID");
+                                parent.layer.close(_curWinIndex);
+                            }
+                        }
+                    })
+                } else {
+                    treetable.render({
+                        elem: '#tblSysFunction',
+                        id: 'tblSysFunction',
+                        url: '../../Data/svcSecurityProvider.aspx?method=Get_SysFunctionList',
+                        icon_key: 'FunTitle',
+                        is_checkbox: true,
+                        treeIdName: 'FunID',
+                        treePidName: 'ParentFunID',
+                        treeSpid: defFunID,
+                        treeColIndex: 1,
+                        height: 'full-125',
+                        cols: [[
+                            { type: 'checkbox' },
+                            { field: 'FunTitle', title: 'Menu', width: '180' },
+                            { field: 'IconKey', title: 'Icon', width: '40', templet: '#myIcon' },
+                            { field: 'OprIDs', title: 'Feature', width: '670', templet: '#myOprItems' }
+                        ]],
+                        done: function () {
+                            refreshLanguage();
+                        }
+                    });
+                }
+
+                table.on('checkbox(tblSysFunction)', function (obj) {
+                    if (obj.checked) {
+                        $(obj.tr).find('.layui-unselect.layui-form-checkbox').each(function (index, item) {
+                            if (!$(item).hasClass('layui-form-checked')) {
+                                $(item).addClass('layui-form-checked');
+                                $($(obj.tr).find(':checkbox')[index]).prop('checked', true);
+                            }
+                        })
+                    } else {
+                        $(obj.tr).find('.layui-unselect.layui-form-checkbox').each(function (index, item) {
+                            if ($(item).hasClass('layui-form-checked')) {
+                                $(item).removeClass('layui-form-checked');
+                                $($(obj.tr).find(':checkbox')[index]).prop('checked', false);
+                            }
+                        })
+                    }
+                    form.render('checkbox');
+                });
+
+                form.on('submit(submitData)', function (data) {
+                    verifyCheckBox([{ id: 'IsEnabled' }], data.field);
+                    var _data = JSON.stringify(data.field);
+                    var _arrFunOprSet = new Array();
+                    for (var iRow = 0; iRow < table.cache.tblSysFunction.length; iRow++) {
+                        if (table.cache.tblSysFunction[iRow].LAY_CHECKED == true) {
+                            var _funID = table.cache.tblSysFunction[iRow].FunID;
+                            var index = table.cache.tblSysFunction[iRow].LAY_TABLE_INDEX;
+                            var checkbox = $('#tblSysFunction').next().find('tr[data-index=' + index + '] input[type="checkbox"]');
+                            var checkboxLayUI = $('#tblSysFunction').next().find('tr[data-index=' + index + '] .layui-unselect.layui-form-checkbox');
+                            var _arrOprIDs = new Array();
+                            for (var subI = 1; subI < checkboxLayUI.length; subI++) {
+                                if ($(checkboxLayUI[subI]).hasClass('layui-form-checked')) {
+                                    _arrOprIDs.push(checkbox[subI].value);
+                                }
+                            }
+                            _arrFunOprSet.push({
+                                FunID: _funID,
+                                OprIDs: _arrOprIDs.join(';')
+                            });
+                        }
+                    }
+                    var _funOprIDs = JSON.stringify(_arrFunOprSet);
+                    $.ajax({
+                        url: '../../Data/svcSecurityProvider.aspx?method=Set_Role_Update',
+                        type: 'POST',
+                        async:false,
+                        data: { RoleItem: _data, FunList: _funOprIDs },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                _preCallFun(item);
+                                parent.layer.close(_curWinIndex);
+                            }
+                            else {
+                                layer.alert("无效服务调用.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+
+                $('#btnClose').click(function () {
+                    parent.layer.close(_curWinIndex);
+                });
+
+                function InitBizUserGroup() {
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_KeyValuesList',
+                        type: 'GET',
+                        async: 'false',
+                        data: {
+                            kvCategory: 'BusinessUserGroup'
+                        },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                $('#BusinessUserGroup').append("<option value=''></option>");
+                                $.each(_data.data, function (index, value) {
+                                    $('#BusinessUserGroup').append("<option value='" + value.ItemKey + "'>" + value.ItemValue + "</option>");
+                                })
+                                form.render('select');
+                            }
+                        }
+                    });
+                }
+
+                function verifyCheckBox(chkList, field) {
+                    $.each(chkList, function (index, elem) {
+                        if (!field.hasOwnProperty(elem.id)) {
+                            field[elem.id] = 0;
+                            //field[elem.id] = $('#' + elem.id).val();
+                        }
+                    })
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
+
+
+
+

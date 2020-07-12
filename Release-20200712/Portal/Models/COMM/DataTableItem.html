@@ -1,0 +1,557 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta id="i18n_pagename" content="common-basic" />
+    <script src="../../Scripts/boot.js"></script>
+</head>
+<body>
+    <div class="feStandardForm">
+        <form class="layui-form  layui-form-pane" action="" lay-filter="DataTableItemForm">
+            <div class="layui-tab layui-tab-brief" lay-filter="dataTableItemTabs"  style="margin-top:0px;">
+                <ul class="layui-tab-title">
+                    <li class="layui-this"><span data-i18n-text='tab-table-info'>Table Info</span></li>
+                    <li><span data-i18n-text='tab-table-field'>Field List</span></li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DatabaseName" data-i18n-text="fld-database-app">Database/App</label>
+                                <div class="grpBtnContainer">
+                                    <div class="layui-input-inline grpBtnTxtitem" style="width:514px;">
+                                        <input class="layui-input" id="TableDatabaseName" name="TableDatabaseName" lay-verify="required" autocomplete="off" readonly="readonly">
+                                    </div>
+                                    <div class="grpBtnIconItem">
+                                        <a id="grpDataBase" class="layui-btn layui-btn-primary"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="margin-left:30px;">
+                                <input type="checkbox" name="IsEnabled" id="IsEnabled" value="1" lay-skin="primary" title="Available" checked="" data-i18n-title="lbl-IsEnabled">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" data-i18n-text="fld-TaskGroupIDs">Working Group</label>
+                                <div class="layui-input-inline" style="text-align:left;width:514px;">
+                                    <div class="layui-input-block" id="TaskGroupIDs" lay-filter="TaskGroupIDs">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataTableSchema" data-i18n-text="fld-DataTableSchema">Schema</label>
+                                <div class="layui-input-inline" style="width:90px;">
+                                    <input class="layui-input" id="DataTableSchema" name="DataTableSchema" value="dbo" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataTableName" style="width:120px;" data-i18n-text="fld-DataTableName">Table</label>
+                                <div class="layui-input-inline" style="width:300px;">
+                                    <input class="layui-input" id="DataTableName" name="DataTableName" lay-verify="required" autocomplete="off">
+                                </div>
+                                <label class="layui-form-label" for="DataTableName" style="width:260px;color:red;" data-i18n-text="lbl-database-table-name">Table/Method/DocLibrary/ListName</label>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataFrequency" data-i18n-text="fld-DataFrequency">Update Frequency</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="DataFrequency" name="DataFrequency" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="DataReadySchedule" data-i18n-text="fld-DataReadySchedule">Data Ready</label>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" id="DataReadySchedule" name="DataReadySchedule" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="TableOwnerName" data-i18n-text="fld-TableOwnerName">Owner</label>
+                                <div class="grpBtnContainer">
+                                    <div class="layui-input-inline grpBtnTxtitem">
+                                        <input class="layui-input" id="TableOwnerName" name="TableOwnerName" autocomplete="off" readonly="readonly">
+                                    </div>
+                                    <div class="grpBtnIconItem">
+                                        <a id="grpOwnerID" class="layui-btn layui-btn-primary"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="TableCategory" data-i18n-text="fld-TableCategory">Data Category</label>
+                                <div class="layui-input-inline" style="width:140px;">
+                                    <input class="layui-input" id="TableCategory" name="TableCategory" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" for="BizDesc" data-i18n-text="fld-BizDesc">Desc</label>
+                            <div class="layui-input-inline" style="width:514px;">
+                                <input class="layui-input" id="BizDesc" name="BizDesc" autocomplete="off">
+                            </div>
+                        </div>
+                        <blockquote class="layui-elem-quote">
+                            <span data-i18n-html="lbl-enterprise-wechat-setting">Enterprise WeChat Setting</span>
+                        </blockquote>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" for="WX_ServiceURL" data-i18n-text="fld-WX_ServiceURL">ServiceURL</label>
+                                <div class="layui-input-inline" style="width:700px;">
+                                    <input class="layui-input" id="WX_ServiceURL" name="WX_ServiceURL" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <div class="layui-btn-group  layui-inline">
+                                <a id="btnToolbarImport" class="layui-btn layui-btn-primary"><i class="fa fa-plug"></i> <span data-i18n-text='btn-import-from-table'>Import from Table</span></a>
+                                <a id="btnToolbarGenerate" class="layui-btn layui-btn-primary"><i class="fa fa-plug"></i> <span data-i18n-text='btn-import-from-query'>Import from Query</span></a>
+                                <a id="btnToolbarAdd" class="layui-btn layui-btn-primary"><i class="fa fa-plus"></i> <span data-i18n-text='btn-add-field'>Add Field</span></a>
+                                <a id="btnToolbarDelete" class="layui-btn"><i class="fa fa-trash"></i> <span data-i18n-text='btn-remove-field'>Remove Field</span></a>
+                            </div>
+                        </div>
+                        <div>
+                            <table id="tblFieldList" class="layui-hide" lay-filter="tblFieldList" ></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item feBtnBottom">
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="submitData"><i class="fa fa-check"></i> <span data-i18n-text="btn-save">Save</span></button>
+                    <button class="layui-btn layui-btn-primary" type="reset"><i class="fa fa-eraser"></i> <span data-i18n-text="btn-clean">Clean</span></button>
+                    <button class="layui-btn layui-btn-primary" id="btnClose"><i class="fa fa-close"></i> <span data-i18n-text="btn-cancel">Cancel</span></button>
+                    <input id="DataTableID" name="DataTableID" style="display:none;" />
+                    <input id="DatabaseID" name="DatabaseID" style="display:none;" />
+                    <input id="OwnerID" name="OwnerID" style="display:none;" />
+                    <input id="SYS_UpdatedKey" name="SYS_UpdatedKey" style="display:none;" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <script type="text/html" id="colIsEnabled">
+        <input type="checkbox" name="IsEnabled" value="{{d.IsEnabled}}" lay-skin="primary" lay-filter="checkItem" {{ d.IsEnabled==1? 'checked': '' }}>
+    </script>
+    <script type="text/html" id="colIsNullable">
+        <input type="checkbox" name="IsNullable" value="{{d.IsNullable}}" lay-skin="primary" lay-filter="checkItem" {{ d.IsNullable==1? 'checked':'' }}>
+    </script>
+    <script type="text/html" id="colIsPrimaryKey">
+        <input type="checkbox" name="IsPrimaryKey" value="{{d.IsPrimaryKey}}" lay-skin="primary" lay-filter="checkItem" {{ d.IsPrimaryKey==1? "checked": ""}}>
+    </script>
+    <script type="text/html" id="colIsIndex">
+        <input type="checkbox" name="IsIndex" value="{{d.IsIndex}}" lay-skin="primary" lay-filter="checkItem" {{ d.IsIndex==1 ? "checked":"" }} />
+    </script>
+    <script type="text/html" id="colIsIncrease">
+        <input type="checkbox" name="IsIncrease" value="{{d.IsIncrease}}" lay-skin="primary" lay-filter="checkItem" {{ d.IsIncrease==1? 'checked':'' }}>
+    </script>
+    <script type="text/html" id="colIsMAX">
+        <input type="checkbox" name="IsLong" value="{{d.IsLong}}" lay-skin="primary" lay-filter="checkItem" {{ d.IsLong==1? 'checked':'' }}>
+    </script>
+    <script>
+        var index = parent.layer.getFrameIndex(window.name);
+        //让当前子窗体自动调整高度适应内容高度
+        var _deletedFieldList = [];
+
+        var _packageID = '';
+        var _workingTableID = '';
+        var _taskGroupIDs = '';
+        var _selectM = {};
+        var _preCallFun = null;
+        var _subIndex = -1;
+        var form;
+
+        function LoadDataTableInfo(tblID, workingTableID, packageID, taskGroupIDs, callFun) {
+            _preCallFun = callFun;
+            _packageID = packageID;
+            _workingTableID = workingTableID;
+            _taskGroupIDs = taskGroupIDs;
+
+            layui.config({
+                base: '../../Scripts/layuiadmin/lib/Extend/'
+            }).extend({
+                selectM: 'selectM'
+            }).use(['form', 'element', 'table', 'selectM'], function () {
+                form = layui.form;
+                var $ = layui.$;
+                var tbl = layui.table;
+                var selectM = layui.selectM;
+                var element = layui.element;
+
+                _selectM = My_Init_Package_TaskGroup($, selectM, _packageID, 'TaskGroupIDs', _taskGroupIDs);
+
+                tbl.render({
+                    elem: '#tblFieldList',
+                    page: false,
+                    limit: 500,
+                    id: 'DataTableFieldGrid',
+                    cellMinWidth: 40,
+                    height: 'full-160',
+                    cols: [[
+                        { type: "checkbox"},
+                        { field: 'FieldName', title: 'Field', width: 280, edit: 'text' },
+                        { field: 'FieldDBType', title: 'Data Type', width: 160, edit: 'text' },
+                        { field: 'FieldLength', title: 'Length', width: 60, edit: 'number' },
+                        { field: 'FieldPrecision', title: 'Scale', width: 50, edit: 'number' },
+                        { field: 'FieldScale', title: 'Scale', width: 50, edit: 'number' },
+                        { field: 'IsEnabled', title: 'Rdy', width: 40, templet: '#colIsEnabled' },
+                        { field: 'IsNullable', title: 'Null', width: 40, templet: '#colIsNullable' },
+                        { field: 'IsPrimaryKey', title: 'Key', width: 40, templet: '#colIsPrimaryKey' },
+                        { field: 'IsIndex', title: 'Idx', width: 40, templet: '#colIsIndex' },
+                        { field: 'IsIncrease', title: 'Inc', width: 40, templet: '#colIsIncrease' },
+                        { field: 'FieldOrdinal', title: 'Order', width: 50, edit: 'number' },
+                     { field: 'DefaultValue', title: 'DefV', width: 80 },
+                        { field: 'FieldComments', title: 'Comments', edit: 'text' }
+                    ]],
+                    data: [],
+                    done: function (res, curr, count) {
+                        refreshLanguage();
+
+                        $('tbody [data-field="FieldName"] .layui-table-cell').css('text-align', 'left');
+                        $('tbody [data-field="FieldDBType"] .layui-table-cell').css('text-align', 'left');
+                    }
+                });
+
+                if (tblID == null)
+                    tblID = '';
+                if (tblID != '') {
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_DataTable_Item',
+                        async: false,
+                        type: 'POST',
+                        data: { DataTableID: tblID },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data.msg == '') {
+                                    form.val('DataTableItemForm', _data.data.table);
+                                    $('#TableDatabaseName').val('[' + _data.data.table.SourceName + '].[' + _data.data.table.DatabaseName + ']');
+                                    tbl.reload('DataTableFieldGrid', { data: _data.data.list });
+                                }
+                                else {
+                                    alert('Invalid DataTable ID');
+                                }
+                            }
+                            else
+                                layer.alert("Invalid Service Call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                }
+                if (packageID != '' && tblID == '') {
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Get_DataBase_SysFarmDB',
+                        async: false,
+                        type: 'POST',
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _data = JSON.parse(item);
+                                if (_data != null && _data != '') {
+                                    if (_data.DatabaseID != null && _data.DatabaseID != '') {
+                                        $('#DatabaseID').val(_data.DatabaseID);
+                                        $('#TableDatabaseName').val('[' + _data.DSName + '].[' + _data.DatabaseName + ']');
+                                    } else
+                                        layer.alert("Please set up the Sand Box workstation first.");
+                                }
+                            }
+                            else
+                                layer.alert("Invalid service call.");
+                        },
+                        error: function (error) {
+                            alert(error);
+                        }
+                    });
+                }
+                if (packageID != '') {
+                    $('#grpDataBase').addClass('layui-btn-disabled');
+                }
+
+                function updateCacheOrForm(tableId, tableCacheId, op) {
+                    op = op || "form";
+                    var divForm = $("#" + tableId).next();
+                    var tableCache = tbl.cache[tableCacheId];
+                    var trJqs = divForm.find(".layui-table-body tr");
+                    trJqs.each(function () {
+                        var trJq = $(this);
+                        var dataIndex = trJq.attr("data-index");
+                        trJq.find("td").each(function () {
+                            var tdJq = $(this);
+                            var fieldName = tdJq.attr("data-field");
+                            var chkItem = tdJq.find('checkbox');
+                            $.each(chkItem, function (ind, elem) {
+                                if (op == 'cache') {
+                                    tableCache[dataIndex][fieldName] = elem.val();
+                                }
+                                else if (op == 'form') {
+                                    elem.val(tableCache[dataIndex][fieldName]);
+                                }
+                            });
+                            var selectJq = tdJq.find("select");
+                            if (selectJq.length == 1) {
+                                if (op == "cache") {
+                                    tableCache[dataIndex][fieldName] = selectJq.eq(0).val();
+                                } else if (op == "form") {
+                                    selectJq.eq(0).val(tableCache[dataIndex][fieldName])
+                                }
+                            }
+                        });
+                    });
+                    return tableCache;
+                }
+                //根据页面用户设置的值，更新缓存中的数据
+                function UpdateCacheFromFormAdj(_rowIndex, _fieldName, _iVal) {
+                    var oldData = tbl.cache['DataTableFieldGrid'];
+                    if (_rowIndex >= -1 && _rowIndex < oldData.length) {
+                        oldData[_rowIndex][_fieldName] = _iVal;
+                    }
+                };
+             
+                form.on('checkbox(checkItem)', function (obj) {
+                    var iRowIndex = obj.elem.parentElement.parentElement.parentElement.rowIndex;
+                    var isChecked = obj.elem.checked == true ? 1 : 0;
+                    var fieldName = this.name;
+                    UpdateCacheFromFormAdj(iRowIndex, fieldName, isChecked);
+                });
+                form.on('submit(submitData)', function (data) {
+                    if ($('#IsEnabled').is(':checked'))
+                        data.field['IsEnabled'] = 1;
+                    else
+                        data.field['IsEnabled'] = 0;
+
+                    //My_VerifyCheckBox($, [{ id: 'IsEnabled' }], data.field);
+                    data.field['PackageID'] = _packageID;
+                    var _taskGroupIDs = data.field.TaskGroupIDs;
+                    var _data = JSON.stringify(data.field);
+                    var _fldList = JSON.stringify(tbl.cache['DataTableFieldGrid']);
+                    $.ajax({
+                        url: '../../Data/svcCommProvider.aspx?method=Set_DataTable_Update',
+                        type: 'POST',
+                        data: { DataTableItem: _data, FieldList: _fldList },
+                        success: function (item) {
+                            if (item != null && item != '') {
+                                var _item = JSON.parse(item);
+                                _item[0].TaskGroupIDs = _taskGroupIDs;
+                                _preCallFun(JSON.stringify(_item));
+
+                                var IDs = [];
+                                $.each(_deletedFieldList, function (index, elem) {
+                                    IDs.push({ TableFieldID: elem.TableFieldID, SYS_UpdatedKey: elem.SYS_UpdatedKey });
+                                });
+                                if (IDs.length > 0) {
+                                    var _IDs = JSON.stringify(IDs);
+                                    $.ajax({
+                                        url: '../../Data/svcCommProvider.aspx?method=Set_DataTable_Field_LogicDelete',
+                                        type: "POST",
+                                        ansy: false,
+                                        cache: false,
+                                        data: { IDs: _IDs },
+                                        success: function (text) {
+                                            parent.layer.close(index);
+                                        }
+                                    });
+                                }
+                                else {
+                                    parent.layer.close(index);
+                                }
+                            }
+                            else {
+                                layer.alert("Invalid Service Call.");
+                            }
+                        },
+                        error: function (error) {
+                            layer.alert(error.responseText);
+                        }
+                    });
+                    return false;
+                });
+                $('#btnToolbarImport').click(function () {
+                     ImportDataTableStructure();
+                });
+                $('#btnToolbarGenerate').click(function () {
+                     ImportDataQuerySchema();
+                });
+                $('#btnToolbarAdd').click(function () {
+                    var newFld = { FieldName: '', FieldDBType: 'nvarchar', FieldLength: 50, FieldScale: 0, IsEnabled: 1, IsNullable: 1, IsPrimaryKey: 0 };
+                    var rows = tbl.cache['DataTableFieldGrid'];
+                    rows.push(newFld);
+                    tbl.reload('DataTableFieldGrid', {
+                        data: rows
+                    });
+                    form.render()
+                });
+                $('#btnToolbarDelete').click(function () {
+                    var sel = tbl.checkStatus('DataTableFieldGrid');
+                    if (sel.data.length > 0) {
+                        layer.confirm("Are you sure to delete these ：" + sel.data.length + " records?"
+                            , { btn: ['Yes', 'No'] }
+                            , function () {
+                                layer.closeAll('dialog');
+                                var oldData = tbl.cache['DataTableFieldGrid'];
+
+                                $.each(sel.data, function (index, elem) {
+                                    if (elem.TableFieldID != null && elem.TableFieldID != '') {
+                                        _deletedFieldList.push(elem);
+                                    }
+                                    for (var i = 0; i < oldData.length; i++) {
+                                        var it = oldData[i];
+                                        if (it.FieldName == elem.FieldName) {
+                                            oldData.splice(i, 1);
+                                            tbl.reload('DataTableFieldGrid', { data: oldData });
+                                            break;
+                                        }
+                                    }
+                                });
+                            });
+                    }
+                });
+
+                $('#btnClose').click(function () {
+                    parent.layer.close(index);
+                });
+                $('#grpDataBase').click(function () {
+                    if (_packageID != '')
+                        return;
+
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('title-query-database'),
+                        fixed: false,
+                        maxmin: true,
+                        layerMode: true,
+                        content: '../share/shareDatabaseSearch.html?v=' + My_GetTimeNumberList(),
+                        zIndex: layer.zIndex,
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('', $('#DatabaseID').val(), function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        $('#TableDatabaseName').val('['+returnData.data[0].DSName+'].['+returnData.data[0].DatabaseName+']');
+
+                                        $('#DatabaseID').val(returnData.data[0].DatabaseID);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+                $('#grpOwnerID').click(function () {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title:$.i18n.prop('title-query-user'),
+                        fixed: false,
+                        maxmin: true,
+                        layerMode: true,
+                        content: '../share/shareEmployeeSearch.html?v=' + My_GetTimeNumberList(),
+                        zIndex: layer.zIndex,
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('dsOwner', $('#OwnerID').val(), function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        $('#TableOwnerName').val(returnData.data[0].Name);
+                                        $('#OwnerID').val(returnData.data[0].UserID);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                function ImportDataTableStructure() {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('btn-import-from-table'),
+                        fixed: false,
+                        maxmin: true,
+                        content: '../share/shareDataStructure_ByTable.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('structureID', function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        for (var i = 0; i < returnData.data.length; i++) {
+                                            returnData.data[i].IsEnabled = 1;
+                                        }
+                                        InitTableFieldList(returnData.data);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                function ImportDataQuerySchema() {
+                    parent.layer.open({
+                        type: 2,
+                        area: ['900px', '570px'],
+                        title: $.i18n.prop('btn-import-from-query'),
+                        fixed: false,
+                        maxmin: true,
+                        content: '../share/shareDataStructure_ByQuery.html?v=' + My_GetTimeNumberList(),
+                        success: function (layero, index) {
+                            _subIndex = index;
+                            var iframeWin = parent.window[layero.find('iframe')[0]['name']];
+                            iframeWin.SetPreValue('structureID', function (returnData) {
+                                _subIndex = -1;
+                                if (returnData != null && returnData != '') {
+                                    if (returnData.data.length > 0) {
+                                        InitTableFieldList(returnData.data);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                };
+
+                //将新增字段，合并到当前列表中
+                function InitTableFieldList(dataResult) {
+                    var rows = tbl.cache['DataTableFieldGrid'];
+                    var newRows = [];
+                    for (var i = 0; i < dataResult.length; i++) {
+                        var fldName = dataResult[i].FieldName;
+                        var isExist = false;
+                        for (var j = 0; j < rows.length; j++) {
+                            if (rows[j].FieldName == fldName) {
+                                isExist = true;
+                                break;
+                            }
+                        }
+                        if (isExist == false) {
+                            newRows.push(dataResult[i]);
+                        }
+                    }
+                    if (newRows.length > 0) {
+                        for (var i = 0; i < newRows.length; i++) {
+                            rows.push(newRows[i]);
+                        }
+                    }
+
+                    tbl.reload('DataTableFieldGrid', {
+                        data: rows
+                    });
+                }
+            });
+        };
+        
+    </script>
+</body>
+</html>
+
