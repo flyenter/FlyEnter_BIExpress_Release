@@ -1,1 +1,0 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="FlyEnter.BISuit.Service.ScheduleCenter.ServiceAdapter" CodeBehind="ServiceAdapter.svc.cs" %>

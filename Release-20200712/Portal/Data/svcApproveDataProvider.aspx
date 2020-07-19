@@ -1,1 +1,0 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="svcApproveDataProvider.aspx.cs" Inherits="FlyEnter.BISuit.Portal.Data.svcApproveDataProvider" %>
